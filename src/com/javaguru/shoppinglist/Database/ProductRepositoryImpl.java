@@ -3,7 +3,6 @@ package com.javaguru.shoppinglist.Database;
 import com.javaguru.shoppinglist.Catalog.Product.Product;
 import com.javaguru.shoppinglist.Catalog.Product.Request.FindRequest;
 import com.javaguru.shoppinglist.Catalog.Product.Request.UpdateRequest;
-import com.javaguru.shoppinglist.Catalog.Product.Response.CreateResponse;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -30,7 +29,7 @@ public class ProductRepositoryImpl implements Repository<Product> {
     }
 
     @Override
-    public List<Product> read(FindRequest itemCriteria) {
+    public List<Product> read(FindRequest findRequest) {
         List<Product> databaseForFind = new ArrayList<>(database.values());
         List<Product> foundItems = new ArrayList<>();
 
@@ -40,10 +39,10 @@ public class ProductRepositoryImpl implements Repository<Product> {
         String sProductCategory;
 
         for (Product product : databaseForFind) {
-            sProductID = ((itemCriteria.getProductID() != null) ? itemCriteria.getProductID() : product.getProductID());
-            sProductName = ((itemCriteria.getProductName() != null) ? itemCriteria.getProductName() : product.getProductName());
-            sProductPrice = ((itemCriteria.getProductPrice() != null) ? itemCriteria.getProductPrice() : product.getProductPrice());
-            sProductCategory = ((itemCriteria.getProductCategory() != null) ? String.valueOf(itemCriteria.getProductCategory()) : String.valueOf(product.getProductCategory()));
+            sProductID = ((findRequest.getProductID() != null) ? findRequest.getProductID() : product.getProductID());
+            sProductName = ((findRequest.getProductName() != null) ? findRequest.getProductName() : product.getProductName());
+            sProductPrice = ((findRequest.getProductPrice() != null) ? findRequest.getProductPrice() : product.getProductPrice());
+            sProductCategory = ((findRequest.getProductCategory() != null) ? String.valueOf(findRequest.getProductCategory()) : String.valueOf(product.getProductCategory()));
 
             if (sProductID.compareTo(product.getProductID()) == 0
                     && sProductName.equals(product.getProductName())
@@ -57,13 +56,63 @@ public class ProductRepositoryImpl implements Repository<Product> {
     }
 
     @Override
-    public List<Product> update(UpdateRequest itemCriteria) {
-        return null;
+    public Product readByID(FindRequest findRequest) {
+        Product product = null;
+        if (database.containsKey(findRequest.getProductID())) {
+            product = database.get(findRequest.getProductID());
+        }
+        return product;
     }
 
     @Override
-    public boolean delete(FindRequest itemID) {
-        return false;
+    public List<Product> update(UpdateRequest updateRequest) {
+        List<Product> listOfUpdatedProducts = read(updateRequest);
+
+        for (Product product : listOfUpdatedProducts) {
+            if (updateRequest.getNewProductPrice() != null)
+            {
+                product.setProductPrice(updateRequest.getNewProductPrice());
+            }
+
+            if (updateRequest.getNewProductDiscount() != null)
+            {
+                product.setProductDiscount(updateRequest.getNewProductDiscount());
+            }
+
+            if (updateRequest.getNewDescription() != null)
+            {
+                product.setProductDescription(updateRequest.getNewDescription());
+            }
+        }
+        return listOfUpdatedProducts;
+    }
+
+    @Override
+    public Product updateByID(UpdateRequest updateRequest) {
+        Product product = null;
+        if (database.containsKey(updateRequest.getProductID())) {
+            product = database.get(updateRequest.getProductID());
+            if (updateRequest.getNewProductPrice() != null) {
+                product.setProductPrice(updateRequest.getNewProductPrice());
+            }
+            if (updateRequest.getNewProductDiscount() != null) {
+                product.setProductDiscount(updateRequest.getNewProductDiscount());
+            }
+            if (updateRequest.getNewDescription() != null) {
+                product.setProductDescription(updateRequest.getNewDescription());
+            }
+        }
+        return product;
+    }
+
+    @Override
+    public boolean delete(FindRequest findRequest) {
+        if (database.containsKey(findRequest.getProductID())) {
+            database.remove(findRequest.getProductID());
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public Map<Long, Product> getAllDatabase() {

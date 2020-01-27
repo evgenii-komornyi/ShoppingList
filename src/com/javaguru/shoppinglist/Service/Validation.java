@@ -15,7 +15,7 @@ public class Validation {
         allErrors.addAll(validateNameField(createFieldRequest.getProductName()));
         allErrors.addAll(validatePriceField(createFieldRequest.getProductPrice()));
         allErrors.addAll(validateCategoryField(createFieldRequest.getProductCategory()));
-        allErrors.addAll(validateDiscountField(createFieldRequest.getProductDiscount()));
+        allErrors.addAll(validateRangeOfDiscount(createFieldRequest.getProductDiscount()));
         allErrors.addAll(validateDescriptionField(createFieldRequest.getProductDescription()));
 
         allErrors.addAll(validateToMoreThanTwentyPrice(createFieldRequest.getProductPrice(), createFieldRequest.getProductDiscount()));
@@ -29,7 +29,7 @@ public class Validation {
         allErrors.addAll(validateSearchCriteria(updateFieldRequest));
 
         allErrors.addAll(validateNewPriceField(updateFieldRequest.getNewProductPrice()));
-        allErrors.addAll(validateDiscountField(updateFieldRequest.getNewProductDiscount()));
+        allErrors.addAll(validateRangeOfDiscount(updateFieldRequest.getNewProductDiscount()));
         allErrors.addAll(validateDescriptionField(updateFieldRequest.getNewDescription()));
 
         return allErrors;
@@ -102,16 +102,6 @@ public class Validation {
         if (category == null) {
             errorsList.add(ValidationErrors.EMPTY_CATEGORY);
         }
-        return errorsList;
-    }
-
-    private List<ValidationErrors> validateDiscountField(BigDecimal discount) {
-        List<ValidationErrors> errorsList = new ArrayList<>();
-
-        if (discount != null && discount.compareTo(BigDecimal.valueOf(0)) < 0) {
-            errorsList.add(ValidationErrors.NEGATIVE_DISCOUNT);
-        }
-        errorsList.addAll(validateRangeOfDiscount(discount));
         return errorsList;
     }
 

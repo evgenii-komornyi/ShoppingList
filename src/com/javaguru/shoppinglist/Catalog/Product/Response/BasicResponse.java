@@ -1,6 +1,5 @@
 package com.javaguru.shoppinglist.Catalog.Product.Response;
 
-import com.javaguru.shoppinglist.Catalog.Product.Product;
 import com.javaguru.shoppinglist.Service.ValidationErrors;
 
 import java.util.List;

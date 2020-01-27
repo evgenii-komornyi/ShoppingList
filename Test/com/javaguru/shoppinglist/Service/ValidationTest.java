@@ -1,6 +1,9 @@
 package com.javaguru.shoppinglist.Service;
 
+import com.javaguru.shoppinglist.Catalog.Product.ProductCategory;
 import com.javaguru.shoppinglist.Catalog.Product.Request.CreateRequest;
+import com.javaguru.shoppinglist.Catalog.Product.Request.FindRequest;
+import com.javaguru.shoppinglist.Catalog.Product.Request.UpdateRequest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,7 +33,7 @@ public class ValidationTest {
     @Before
     public void setUp() {
         String name = "Milk";
-        BigDecimal price = new BigDecimal("1.8");
+        BigDecimal price = new BigDecimal("35");
         String  category = "MILK";
         BigDecimal discount = new BigDecimal("20");
         String description = "BlaBlaBlaBlaBla";
@@ -90,7 +93,7 @@ public class ValidationTest {
 
         milkWithLowerThanTwentyPrice = new CreateRequest();
         milkWithLowerThanTwentyPrice.setProductName(name);
-        milkWithLowerThanTwentyPrice.setProductPrice(price);
+        milkWithLowerThanTwentyPrice.setProductPrice(new BigDecimal("18"));
         milkWithLowerThanTwentyPrice.setProductCategory("MILK");
         milkWithLowerThanTwentyPrice.setProductDiscount(discount);
 
@@ -169,7 +172,7 @@ public class ValidationTest {
     public void validateCreateRequestWithNameShorterThanThreeSymbols() {
         Validation validate = new Validation();
 
-        String expectedError = "Name can be only from 4 to 20 symbols long";
+        String expectedError = "Name can be only from 3 to 32 symbols long";
 
         List<ValidationErrors> list = validate.validateCreateRequest(milkWithShorterThanThreeSymbolsName);
 
@@ -188,15 +191,15 @@ public class ValidationTest {
     public void validateCreateRequestWithNameLongerThanTwentySymbols() {
         Validation validate = new Validation();
 
-        String expectedError = "Name can be only from 4 to 20 symbols long";
+        String expectedError = "Name can be only from 3 to 32 symbols long";
 
         List<ValidationErrors> list = validate.validateCreateRequest(milkWithLongerThanThirtyTwoSymbolsName);
 
         for (ValidationErrors validationErrors : list) {
             if (validationErrors.getResponse().equals(expectedError)) {
-                System.out.println("Test for validation of the create request with name longer than 20 symbols has passed");
+                System.out.println("Test for validation of the create request with name longer than 32 symbols has passed");
             } else {
-                System.out.println("Test for validation of the create request with name longer than 20 symbols has failed");
+                System.out.println("Test for validation of the create request with name longer than 32 symbols has failed");
                 System.out.println("Expected result is: " + expectedError);
                 System.out.println("Actual result is: " + validationErrors.getResponse());
             }
@@ -245,17 +248,16 @@ public class ValidationTest {
     public void validateCreateRequestWithNegativeAndOutOfRangeDiscount() {
         Validation validate = new Validation();
 
-        String expectedErrorOne = "Discount can't be negative";
-        String expectedErrorTwo = "Discount can be only from 0 to 1, or empty";
+        String expectedError = "Discount can be only from 0 to 100, or empty";
 
         List<ValidationErrors> list = validate.validateCreateRequest(milkWithNegativeAndOutOfRangeDiscount);
 
         for (ValidationErrors validationErrors : list) {
-            if (validationErrors.getResponse().equals(expectedErrorOne) || validationErrors.getResponse().equals(expectedErrorTwo)) {
+            if ( validationErrors.getResponse().equals(expectedError)) {
                 System.out.println("Test for validation of the create request with negative or out of range discount has passed");
             } else {
                 System.out.println("Test for validation of the create request with negative or out of range discount has failed");
-                System.out.println("Expected result is: " + expectedErrorOne + ", " + expectedErrorTwo);
+                System.out.println("Expected result is: " + expectedError);
                 System.out.println("Actual result is: " + validationErrors.getResponse());
             }
         }
@@ -312,6 +314,96 @@ public class ValidationTest {
                 System.out.println("Test for validation of the create request with lower than 20 price has passed");
             } else {
                 System.out.println("Test for validation of the create request with lower than 20 price has failed");
+                System.out.println("Expected result is: " + expectedError);
+                System.out.println("Actual result is: " + validationErrors.getResponse());
+            }
+        }
+    }
+
+    @Test
+    public void validateFindRequestWithEmptyFields() {
+        Validation validate = new Validation();
+
+        String expectedError = "ID, or name, or category field for search can't be empty";
+
+        FindRequest findRequest = new FindRequest();
+
+        List<ValidationErrors> list = validate.validateFindRequest(findRequest);
+
+        for (ValidationErrors validationErrors : list) {
+            if (validationErrors.getResponse().equals(expectedError)) {
+                System.out.println("Test for validation of the find request with empty fields has passed");
+            } else {
+                System.out.println("Test for validation of the find request with empty fields has failed");
+                System.out.println("Expected result is: " + expectedError);
+                System.out.println("Actual result is: " + validationErrors.getResponse());
+            }
+        }
+    }
+
+    @Test
+    public void validateFindRequestWithAllFieldsFilled() {
+        Validation validate = new Validation();
+
+        String expectedError = "Search is available only by ID, or name, or category";
+
+        FindRequest findRequest = new FindRequest();
+        findRequest.setProductID(Long.valueOf(0));
+        findRequest.setProductName("Milk");
+
+        findRequest.setProductCategory(ProductCategory.MILK);
+
+        List<ValidationErrors> list = validate.validateFindRequest(findRequest);
+
+        for (ValidationErrors validationErrors : list) {
+            if (validationErrors.getResponse().equals(expectedError)) {
+                System.out.println("Test for validation of the find request with all filled fields has passed");
+            } else {
+                System.out.println("Test for validation of the find request with all filled fields has failed");
+                System.out.println("Expected result is: " + expectedError);
+                System.out.println("Actual result is: " + validationErrors.getResponse());
+            }
+        }
+    }
+
+    @Test
+    public void validateUpdateRequestWithEmptyFields() {
+        Validation validate = new Validation();
+
+        String expectedError = "ID, or category field for update can't be empty";
+
+        UpdateRequest updateRequest = new UpdateRequest();
+
+        List<ValidationErrors> list = validate.validateUpdateRequest(updateRequest);
+
+        for (ValidationErrors validationErrors : list) {
+            if (validationErrors.getResponse().equals(expectedError)) {
+                System.out.println("Test for validation of the update request with empty fields has passed");
+            } else {
+                System.out.println("Test for validation of the update request with empty fields has failed");
+                System.out.println("Expected result is: " + expectedError);
+                System.out.println("Actual result is: " + validationErrors.getResponse());
+            }
+        }
+    }
+
+    @Test
+    public void validateUpdateRequestWithAllFieldsFilled() {
+        Validation validate = new Validation();
+
+        String expectedError = "Update is available only by ID, or category";
+
+        UpdateRequest updateRequest = new UpdateRequest();
+        updateRequest.setProductID(Long.valueOf(0));
+        updateRequest.setProductCategory(ProductCategory.MILK);
+
+        List<ValidationErrors> list = validate.validateUpdateRequest(updateRequest);
+
+        for (ValidationErrors validationErrors : list) {
+            if (validationErrors.getResponse().equals(expectedError)) {
+                System.out.println("Test for validation of the update request with all filled fields has passed");
+            } else {
+                System.out.println("Test for validation of the update request with all filled fields has failed");
                 System.out.println("Expected result is: " + expectedError);
                 System.out.println("Actual result is: " + validationErrors.getResponse());
             }

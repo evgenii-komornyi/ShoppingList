@@ -4,8 +4,10 @@ import com.javaguru.shoppinglist.Catalog.Product.Product;
 import com.javaguru.shoppinglist.Catalog.Product.ProductCategory;
 import com.javaguru.shoppinglist.Catalog.Product.Request.CreateRequest;
 import com.javaguru.shoppinglist.Catalog.Product.Request.FindRequest;
+import com.javaguru.shoppinglist.Catalog.Product.Request.UpdateRequest;
 import com.javaguru.shoppinglist.Catalog.Product.Response.CreateResponse;
 import com.javaguru.shoppinglist.Catalog.Product.Response.FindResponse;
+import com.javaguru.shoppinglist.Catalog.Product.Response.UpdateResponse;
 import com.javaguru.shoppinglist.Database.ProductRepositoryImpl;
 
 import java.util.List;
@@ -24,7 +26,9 @@ public class Service {
             Product product = new Product(createRequest.getProductName(),
                                           createRequest.getProductPrice(),
                                           ProductCategory.valueOf(createRequest.getProductCategory()));
-            product.setProductDiscount(createRequest.getProductDiscount());
+            if (createRequest.getProductDiscount() != null) {
+                product.setProductDiscount(createRequest.getProductDiscount());
+            }
             product.setProductDescription(createRequest.getProductDescription());
 
             try {
@@ -37,8 +41,53 @@ public class Service {
         return response;
     }
 
-    public List<Product> findByID(FindRequest requestProductID) {
-        return DB.read(requestProductID);
+    public FindResponse findByID(FindRequest findRequest) {
+        FindResponse response = new FindResponse();
+        List<ValidationErrors> validationErrors = validator.validateFindRequest(findRequest);
+        if (validationErrors.size() != 0) {
+            response.setValidationErrors(validationErrors);
+        } else {
+            response.setFoundProduct(DB.readByID(findRequest));
+        }
+        return response;
+    }
+
+    public FindResponse findByCategory(FindRequest findRequest) {
+        FindResponse response = new FindResponse();
+        List<ValidationErrors> validationErrors = validator.validateFindRequest(findRequest);
+        if (validationErrors.size() != 0) {
+            response.setValidationErrors(validationErrors);
+        } else {
+            response.setListOfFoundProducts(DB.read(findRequest));
+        }
+        return response;
+    }
+
+    public UpdateResponse updateByID(UpdateRequest updateRequest) {
+        UpdateResponse response = new UpdateResponse();
+        List<ValidationErrors> validationErrors = validator.validateUpdateRequest(updateRequest);
+        if (validationErrors.size() != 0) {
+            response.setValidationErrors(validationErrors);
+            System.out.println("TEST");
+        } else {
+            response.setUpdatedProduct(DB.updateByID(updateRequest));
+        }
+        return response;
+    }
+
+    public UpdateResponse updateByCategory(UpdateRequest updateRequest) {
+        UpdateResponse response = new UpdateResponse();
+        List<ValidationErrors> validationErrors = validator.validateUpdateRequest(updateRequest);
+        if (validationErrors.size() != 0) {
+            response.setValidationErrors(validationErrors);
+        } else {
+            response.setListOfUpdatedProducts(DB.update(updateRequest));
+        }
+        return response;
+    }
+
+    public boolean deleteByID(FindRequest findRequest) {
+        return DB.delete(findRequest);
     }
 
     public Map<Long, Product> getAllDatabase() {
