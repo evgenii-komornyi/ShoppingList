@@ -2,6 +2,7 @@ package com.javaguru.shoppinglist.Catalog.Product;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Objects;
 
 public class Product {
     private static Long countID = 0L;
@@ -40,6 +41,24 @@ public class Product {
                 ", productDiscount=" + productDiscount.setScale(2, RoundingMode.HALF_EVEN) +
                 ", productDescription='" + productDescription + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Product product = (Product) o;
+        return Objects.equals(productID, product.productID) &&
+                Objects.equals(productName, product.productName) &&
+                Objects.equals(productPrice, product.productPrice) &&
+                productCategory == product.productCategory &&
+                Objects.equals(productDiscount, product.productDiscount) &&
+                Objects.equals(productDescription, product.productDescription);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(productID, productName, productPrice, productCategory, productDiscount, productDescription);
     }
 
     public Long getProductID() {

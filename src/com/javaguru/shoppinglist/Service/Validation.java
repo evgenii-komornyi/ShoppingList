@@ -1,6 +1,8 @@
 package com.javaguru.shoppinglist.Service;
 
 import com.javaguru.shoppinglist.Catalog.Product.Request.CreateRequest;
+import com.javaguru.shoppinglist.Catalog.Product.Request.FindRequest;
+import com.javaguru.shoppinglist.Catalog.Product.Request.UpdateRequest;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -17,6 +19,26 @@ public class Validation {
         allErrors.addAll(validateDescriptionField(createFieldRequest.getProductDescription()));
 
         allErrors.addAll(validateToMoreThanTwentyPrice(createFieldRequest.getProductPrice(), createFieldRequest.getProductDiscount()));
+
+        return allErrors;
+    }
+
+    public List<ValidationErrors> validateUpdateRequest(UpdateRequest updateFieldRequest) {
+        List<ValidationErrors> allErrors = new ArrayList<>();
+
+        allErrors.addAll(validateSearchCriteria(updateFieldRequest));
+
+        allErrors.addAll(validateNewPriceField(updateFieldRequest.getNewProductPrice()));
+        allErrors.addAll(validateDiscountField(updateFieldRequest.getNewProductDiscount()));
+        allErrors.addAll(validateDescriptionField(updateFieldRequest.getNewDescription()));
+
+        return allErrors;
+    }
+
+    public List<ValidationErrors> validateFindRequest(FindRequest findFieldRequest) {
+        List<ValidationErrors> allErrors = new ArrayList<>();
+
+        allErrors.addAll(validateSearchCriteria(findFieldRequest));
 
         return allErrors;
     }
@@ -112,5 +134,44 @@ public class Validation {
             errorsList.add(ValidationErrors.DESCIPTION_LENGTH_VIOLATION);
         }
         return errorsList;
+    }
+
+    private List<ValidationErrors> validateSearchCriteria(UpdateRequest searchCriteria) {
+        List<ValidationErrors> allErrors = new ArrayList<>();
+
+        if (searchCriteria.getProductID() == null && searchCriteria.getProductCategory() == null)
+        {
+            allErrors.add(ValidationErrors.NO_UPDATE_CRITERIA);
+        }
+
+        if (searchCriteria.getProductID() != null && searchCriteria.getProductCategory() != null)
+        {
+            allErrors.add(ValidationErrors.CONFLICT_UPDATE_PARAMS);
+        }
+        return allErrors;
+    }
+
+    private List<ValidationErrors> validateNewPriceField(BigDecimal newPrice) {
+        List<ValidationErrors> errorsList = new ArrayList<>();
+
+        errorsList.addAll(negativeNumberCheck(newPrice));
+        return errorsList;
+    }
+
+    private List<ValidationErrors> validateSearchCriteria(FindRequest searchCriteria) {
+        List<ValidationErrors> allErrors = new ArrayList<>();
+
+        if (searchCriteria.getProductID() == null
+                && searchCriteria.getProductName() == null
+                && searchCriteria.getProductCategory() == null)
+        {
+            allErrors.add(ValidationErrors.NO_SEARCH_CRITERIA);
+        }
+
+        if (searchCriteria.getProductID() != null && searchCriteria.getProductName() != null && searchCriteria.getProductCategory() != null)
+        {
+            allErrors.add(ValidationErrors.CONFLICT_SEARCH_PARAMS);
+        }
+        return allErrors;
     }
 }

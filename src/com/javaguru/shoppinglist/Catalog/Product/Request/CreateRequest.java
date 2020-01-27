@@ -1,7 +1,5 @@
 package com.javaguru.shoppinglist.Catalog.Product.Request;
 
-import com.javaguru.shoppinglist.Catalog.Product.ProductCategory;
-
 import java.math.BigDecimal;
 
 public class CreateRequest {

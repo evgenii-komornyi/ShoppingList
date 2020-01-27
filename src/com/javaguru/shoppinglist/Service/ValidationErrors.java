@@ -9,6 +9,7 @@ public enum ValidationErrors {
     EMPTY_PRICE("Price can't be empty"),
     EMPTY_CATEGORY("Category can't be empty"),
     NAME_LENGTH_VIOLATION("Name can be only from 3 to 32 symbols long"),
+    DUPLICATE_NAME("Name already exist"),
     NEGATIVE_OR_ZERO_PRICE("Price can't be negative, or 0"),
     DISCOUNT_APPLICATION_LIMIT_VIOLATION("Discount can't be applied to price lower than 20 euro"),
     NEGATIVE_DISCOUNT("Discount can't be negative"),

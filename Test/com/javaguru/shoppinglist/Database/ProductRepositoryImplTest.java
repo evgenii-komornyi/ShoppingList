@@ -20,19 +20,22 @@ public class ProductRepositoryImplTest {
         milk = new Product("Milk", new BigDecimal("2.8"), ProductCategory.MILK);
         milk.setProductDiscount(new BigDecimal("45.3"));
         milk.setProductDescription("Good cow milk from Latvia");
-        meat = new Product("Meat", new BigDecimal("5.8"), ProductCategory.MEAT);
+        meat = new Product("Beef", new BigDecimal("5.8"), ProductCategory.MEAT);
         bread = new Product("Bread", new BigDecimal("1.5"), ProductCategory.BREAD);
     }
 
     @Test
     public void testForCreateProductInDatabase() {
         ProductRepositoryImpl db = new ProductRepositoryImpl();
-        db.create(milk);
+        try {
+            db.create(milk);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
 
         int expectedSizeList = 1;
         Map<Long, Product> list = db.getAllDatabase();
 
-        System.out.println(db.getAllDatabase());
         assertEquals(expectedSizeList, list.size());
     }
 }

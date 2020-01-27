@@ -35,6 +35,7 @@ public class UIController {
                     case "1":
                     case "add":
                         addNewProduct();
+                        System.out.println(productService.getAllDatabase());
                         break;
                     case "?":
                     case "help":
@@ -46,8 +47,6 @@ public class UIController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-
         }
     }
 
