@@ -4,6 +4,8 @@ import com.javaguru.shoppinglist.Catalog.Product.ProductCategory;
 import com.javaguru.shoppinglist.Catalog.Product.Request.CreateRequest;
 import com.javaguru.shoppinglist.Catalog.Product.Request.FindRequest;
 import com.javaguru.shoppinglist.Catalog.Product.Request.UpdateRequest;
+import com.javaguru.shoppinglist.Service.Validation.Validation;
+import com.javaguru.shoppinglist.Service.Validation.ValidationErrors;
 import org.junit.Before;
 import org.junit.Test;
 

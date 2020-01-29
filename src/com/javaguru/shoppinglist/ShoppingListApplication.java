@@ -1,4 +1,6 @@
-package com.javaguru.shoppinglist.UI;
+package com.javaguru.shoppinglist;
+
+import com.javaguru.shoppinglist.UI.UIController;
 
 class ShoppingListApplication {
     public static void main(String[] args) {

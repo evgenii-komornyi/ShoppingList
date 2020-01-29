@@ -1,4 +1,4 @@
-package com.javaguru.shoppinglist.Service;
+package com.javaguru.shoppinglist.Service.Validation;
 
 import java.util.ArrayList;
 import java.util.Arrays;

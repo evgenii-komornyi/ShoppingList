@@ -8,7 +8,7 @@ import com.javaguru.shoppinglist.Catalog.Product.Request.UpdateRequest;
 import com.javaguru.shoppinglist.Catalog.Product.Response.CreateResponse;
 import com.javaguru.shoppinglist.Catalog.Product.Response.UpdateResponse;
 import com.javaguru.shoppinglist.Service.Service;
-import com.javaguru.shoppinglist.Service.ValidationErrors;
+import com.javaguru.shoppinglist.Service.Validation.ValidationErrors;
 
 import java.io.*;
 import java.math.BigDecimal;

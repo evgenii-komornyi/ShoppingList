@@ -1,4 +1,4 @@
-package com.javaguru.shoppinglist.Service;
+package com.javaguru.shoppinglist.Service.Validation;
 
 import com.javaguru.shoppinglist.Catalog.Product.Request.CreateRequest;
 import com.javaguru.shoppinglist.Catalog.Product.Request.FindRequest;

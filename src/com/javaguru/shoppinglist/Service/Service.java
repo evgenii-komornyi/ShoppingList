@@ -9,6 +9,8 @@ import com.javaguru.shoppinglist.Catalog.Product.Response.CreateResponse;
 import com.javaguru.shoppinglist.Catalog.Product.Response.FindResponse;
 import com.javaguru.shoppinglist.Catalog.Product.Response.UpdateResponse;
 import com.javaguru.shoppinglist.Database.ProductRepositoryImpl;
+import com.javaguru.shoppinglist.Service.Validation.Validation;
+import com.javaguru.shoppinglist.Service.Validation.ValidationErrors;
 
 import java.util.List;
 import java.util.Map;
