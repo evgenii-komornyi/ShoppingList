@@ -22,8 +22,15 @@ public class ProductRepositoryImplTest {
     private Product bread;
     private Product cheese;
 
+    private ProductRepositoryImpl db;
+    private FindRequest findRequest;
+    private UpdateRequest updateRequest;
     @Before
     public void setUp() {
+        db = new ProductRepositoryImpl();
+        findRequest = new FindRequest();
+        updateRequest = new UpdateRequest();
+
         milk = new Product("Milk", new BigDecimal("25"), ProductCategory.MILK);
         milk.setProductDiscount(new BigDecimal("45.3"));
         milk.setProductDescription("Good cow milk from Latvia");
@@ -34,12 +41,7 @@ public class ProductRepositoryImplTest {
 
     @Test
     public void testForCreateProductInDatabase() {
-        ProductRepositoryImpl db = new ProductRepositoryImpl();
-        try {
-            db.create(milk);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        db.create(milk);
 
         int expectedSizeList = 1;
         Map<Long, Product> list = db.getAllDatabase();
@@ -49,14 +51,9 @@ public class ProductRepositoryImplTest {
 
     @Test
     public void getAllDatabase() {
-        ProductRepositoryImpl db = new ProductRepositoryImpl();
-        try {
-            db.create(milk);
-            db.create(meat);
-            db.create(cheese);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        db.create(milk);
+        db.create(meat);
+        db.create(cheese);
 
         int expectedSize = 3;
 
@@ -65,115 +62,71 @@ public class ProductRepositoryImplTest {
 
     @Test
     public void readByID() {
-        ProductRepositoryImpl db = new ProductRepositoryImpl();
-        try {
-            db.create(milk);
-            db.create(meat);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        db.create(milk);
+        db.create(meat);
 
         Long id = milk.getProductID();
 
-        FindRequest request = new FindRequest();
-        request.setProductID(id);
+        findRequest.setProductID(id);
 
-        List<Product> expected = Collections.singletonList(milk);
-
-        assertEquals(expected, db.read(request));
+        assertEquals(Collections.singletonList(milk), db.read(findRequest));
     }
 
     @Test
     public void readByName() {
-        ProductRepositoryImpl db = new ProductRepositoryImpl();
-        try {
-            db.create(milk);
-            db.create(meat);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        db.create(milk);
+        db.create(meat);
 
-        List<Product> expected = Collections.singletonList(milk);
+        findRequest.setProductName("Milk");
 
-        FindRequest request = new FindRequest();
-        request.setProductName("Milk");
-
-        List<Product> actual = db.read(request);
-
-        if (expected.equals(actual))
-        {
-            System.out.println("Test for find by name has passed");
-        } else
-        {
-            System.out.println("Test for find by name has failed");
-            System.out.println(expected);
-            System.out.println(actual);
-        }
+        assertEquals(Collections.singletonList(milk), db.read(findRequest));
     }
 
     @Test
     public void readByCategory() {
-        ProductRepositoryImpl db = new ProductRepositoryImpl();
-        try {
-            db.create(milk);
-            db.create(meat);
-            db.create(cheese);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        FindRequest request = new FindRequest();
-        request.setProductCategory(ProductCategory.MILK);
+        db.create(milk);
+        db.create(meat);
+        db.create(cheese);
+
+        findRequest.setProductCategory(ProductCategory.MILK);
 
         List<Product> expected = new ArrayList<>();
         expected.add(milk);
         expected.add(cheese);
 
-        assertEquals(expected, db.read(request));
+        assertEquals(expected, db.read(findRequest));
     }
 
     @Test
     public void updateByID() {
-        ProductRepositoryImpl db = new ProductRepositoryImpl();
-        try {
-            db.create(milk);
-            db.create(meat);
-            db.create(cheese);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        db.create(milk);
+        db.create(meat);
+        db.create(cheese);
 
         Long id = meat.getProductID();
 
-        UpdateRequest request = new UpdateRequest();
-        request.setProductID(id);
+        updateRequest.setProductID(id);
 
         BigDecimal expected = new BigDecimal("60.0");
 
-        request.setNewProductPrice(expected);
+        updateRequest.setNewProductPrice(expected);
 
-        db.update(request);
+        db.update(updateRequest);
 
-        BigDecimal actual = meat.getProductPrice();
-
-        assertEquals(expected, actual);
+        assertEquals(expected, meat.getProductPrice());
     }
 
     @Test
     public void deleteByID() {
-        ProductRepositoryImpl db = new ProductRepositoryImpl();
-        try {
-            db.create(milk);
-            db.create(meat);
-            db.create(bread);
-            db.create(cheese);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        db.create(milk);
+        db.create(meat);
+        db.create(bread);
+        db.create(cheese);
+
         Long id = meat.getProductID();
 
-        FindRequest request = new FindRequest();
-        request.setProductID(id);
+        findRequest.setProductID(id);
 
-        assertTrue(db.delete(request));
+        assertTrue(db.delete(findRequest));
     }
 }

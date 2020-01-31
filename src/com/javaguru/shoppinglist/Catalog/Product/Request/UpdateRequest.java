@@ -7,10 +7,6 @@ public class UpdateRequest extends FindRequest {
     private BigDecimal newProductDiscount;
     private String newDescription;
 
-    public UpdateRequest() {
-        super();
-    }
-
     public BigDecimal getNewProductPrice() {
         return newProductPrice;
     }

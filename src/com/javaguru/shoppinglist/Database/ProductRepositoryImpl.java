@@ -5,26 +5,23 @@ import com.javaguru.shoppinglist.Catalog.Product.Request.FindRequest;
 import com.javaguru.shoppinglist.Catalog.Product.Request.UpdateRequest;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ProductRepositoryImpl implements Repository<Product> {
     private static Map<Long, Product> database = new HashMap<>();
 
     @Override
-    public Product create(Product item) throws Exception {
+    public Product create(Product item) {
         if (!database.containsValue(item)) {
             for (Product product : database.values()) {
-                if (product.getProductName().toLowerCase().equals(item.getProductName().toLowerCase())) {
-                    throw new Exception("Duplicate name");
+                if (product.getProductName().equalsIgnoreCase(item.getProductName())) {
+                    return null;
                 }
             }
             database.put(item.getProductID(), item);
             return item;
         } else {
-            throw new Exception("Duplicate key");
+            return null;
         }
     }
 

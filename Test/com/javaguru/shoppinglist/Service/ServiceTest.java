@@ -5,15 +5,14 @@ import com.javaguru.shoppinglist.Catalog.Product.ProductCategory;
 import com.javaguru.shoppinglist.Catalog.Product.Request.CreateRequest;
 import com.javaguru.shoppinglist.Catalog.Product.Request.FindRequest;
 import com.javaguru.shoppinglist.Catalog.Product.Request.UpdateRequest;
-import com.javaguru.shoppinglist.Catalog.Product.Response.CreateResponse;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ServiceTest {
     private CreateRequest milk;
@@ -21,8 +20,17 @@ public class ServiceTest {
     private CreateRequest bread;
     private CreateRequest cheese;
 
+    private Service service;
+
+    private FindRequest findRequest;
+    private UpdateRequest updateRequest;
+
     @Before
     public void setUp() {
+        service = new Service();
+        findRequest = new FindRequest();
+        updateRequest = new UpdateRequest();
+
         milk = new CreateRequest();
         milk.setProductName("Milk");
         milk.setProductPrice(new BigDecimal("43.2"));
@@ -52,106 +60,77 @@ public class ServiceTest {
 
     @Test
     public void testToAddProductToDatabase() {
-        Service service = new Service();
         service.addProduct(milk);
         service.addProduct(meat);
         service.addProduct(bread);
 
         Map<Long, Product> productList = service.getAllDatabase();
-        int expectedSize = 3;
 
-        assertEquals(expectedSize, productList.size());
+        assertEquals(3, productList.size());
     }
 
     @Test
     public void getAllDatabase() {
-        Service service = new Service();
         service.addProduct(milk);
         service.addProduct(meat);
         service.addProduct(bread);
 
-        int expectedSize = 3;
-
-        assertEquals(expectedSize, service.getAllDatabase().size());
+        assertEquals(3, service.getAllDatabase().size());
     }
 
     @Test
     public void findByID() {
-        Service service = new Service();
         service.addProduct(milk);
         service.addProduct(meat);
 
-        FindRequest request = new FindRequest();
-        request.setProductID(Long.valueOf(0));
+        findRequest.setProductID(0L);
 
-        int expected = 1;
-
-        assertEquals(expected, service.findByID(request).getListOfFoundProducts().size());
+        assertEquals(milk.getProductName(), service.findByID(findRequest).getFoundProduct().getProductName());
     }
 
     @Test
     public void findByCategory() {
-        Service service = new Service();
         service.addProduct(milk);
         service.addProduct(meat);
         service.addProduct(cheese);
 
-        FindRequest request = new FindRequest();
-        request.setProductCategory(ProductCategory.MILK);
+        updateRequest.setProductCategory(ProductCategory.MILK);
 
-        int expected = 2;
-
-        assertEquals(expected, service.findByCategory(request).getListOfFoundProducts().size());
+        assertEquals(2, service.findByCategory(updateRequest).getListOfFoundProducts().size());
     }
 
     @Test
     public void updateByID() {
-        Service service = new Service();
         Long id = service.addProduct(milk).getProduct().getProductID();
         service.addProduct(meat);
         service.addProduct(bread);
 
-        UpdateRequest request = new UpdateRequest();
-        request.setProductID(id);
+        updateRequest.setProductID(id);
         BigDecimal expectedDiscount = new BigDecimal("10.5");
-        request.setNewProductDiscount(expectedDiscount);
+        updateRequest.setNewProductDiscount(expectedDiscount);
 
-        System.out.println(service.updateByID(request));
+        service.updateByID(updateRequest);
 
-        List<Product> updatedItem = service.updateByID(request).getListOfUpdatedProducts();
-        BigDecimal actualDiscount = null;
-        for (Product product : updatedItem) {
-            actualDiscount = product.getProductDiscount();
-        }
-
-        assertEquals(expectedDiscount, actualDiscount);
+        assertEquals(expectedDiscount, service.updateByID(updateRequest).getUpdatedProduct().getProductDiscount());
     }
 
     @Test
     public void updateByCategory() {
-        Service service = new Service();
         service.addProduct(milk);
         service.addProduct(meat);
 
-        UpdateRequest request = new UpdateRequest();
-        request.setProductCategory(ProductCategory.MILK);
-        request.setNewDescription("Its a good milk");
+        updateRequest.setProductCategory(ProductCategory.MILK);
+        updateRequest.setNewDescription("Its a good milk");
 
-        int expectedListLengthOfUpdatedItems = 2;
-
-        int actualListLengthOfUpdatedItems = service.updateByCategory(request).getListOfUpdatedProducts().size();
-
-        assertEquals(expectedListLengthOfUpdatedItems, actualListLengthOfUpdatedItems);
+        assertEquals(1, service.updateByCategory(updateRequest).getListOfUpdatedProducts().size());
     }
 
     @Test
     public void deleteByID() {
-        Service service = new Service();
         Long id = service.addProduct(milk).getProduct().getProductID();
 
-        FindRequest request = new FindRequest();
-        request.setProductID(id);
+        findRequest.setProductID(id);
 
-        assertTrue(service.deleteByID(request));
+        assertTrue(service.deleteByID(findRequest));
     }
 }

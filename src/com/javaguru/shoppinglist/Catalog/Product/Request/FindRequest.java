@@ -11,13 +11,6 @@ public class FindRequest {
     private ProductCategory productCategory;
     private BigDecimal productPrice;
 
-    public FindRequest() {
-        this.productID = null;
-        this.productName = null;
-        this.productPrice = null;
-        this.productCategory = null;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

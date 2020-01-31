@@ -11,17 +11,17 @@ public class Product {
     private String productName;
     private BigDecimal productPrice;
     private ProductCategory productCategory;
-    private BigDecimal productDiscount = new BigDecimal("0.00");
+    private BigDecimal productDiscount = BigDecimal.ZERO;
     private String productDescription = "";
 
     public Product(String productName, BigDecimal productPrice, ProductCategory productCategory) {
-        this.productID = getCountID();
+        this.productID = incrementCountID();
         this.productName = productName;
         this.productPrice = productPrice;
         this.productCategory = productCategory;
     }
 
-    private Long getCountID() {
+    private Long incrementCountID() {
         return countID++;
     }
 

@@ -7,16 +7,8 @@ public class CreateRequest {
     private BigDecimal productPrice;
     private String productCategory;
 
-    private BigDecimal productDiscount;
-    private String productDescription;
-
-    public CreateRequest() {
-        this.productName = null;
-        this.productPrice = null;
-        this.productCategory = null;
-        this.productDiscount = new BigDecimal("0.0");
-        this.productDescription = "";
-    }
+    private BigDecimal productDiscount = BigDecimal.ZERO;
+    private String productDescription = "";
 
     public String getProductName() {
         return productName;

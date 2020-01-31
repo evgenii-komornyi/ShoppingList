@@ -6,7 +6,7 @@ import com.javaguru.shoppinglist.Catalog.Product.Request.UpdateRequest;
 import java.util.List;
 
 public interface Repository<T> {
-    T create(T item) throws Exception;
+    T create(T item);
     List<T> read(FindRequest findRequest);
     T readByID(FindRequest findRequest);
     List<T> update(UpdateRequest updateRequest);
