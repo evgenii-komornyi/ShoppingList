@@ -9,7 +9,6 @@ public interface Repository<T> {
     T create(T item);
     List<T> read(FindRequest findRequest);
     T readByID(FindRequest findRequest);
-    List<T> update(UpdateRequest updateRequest);
     T updateByID(UpdateRequest updateRequest);
     boolean delete(FindRequest itemID);
 }

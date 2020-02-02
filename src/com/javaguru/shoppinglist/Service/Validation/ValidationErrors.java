@@ -12,7 +12,7 @@ public enum ValidationErrors {
     DUPLICATE_NAME("Name already exist"),
     NEGATIVE_OR_ZERO_PRICE("Price can't be negative, or 0"),
     DISCOUNT_APPLICATION_LIMIT_VIOLATION("Discount can't be applied to price lower than 20 euro"),
-    INVALID_RANGE("Discount can be only from 0 to 100, or empty"),
+    INVALID_DISCOUNT_RANGE("Discount can be only from 0 to 100, or empty"),
     DESCIPTION_LENGTH_VIOLATION("Description can be only from 8 to 60 symbols long"),
     NO_SEARCH_CRITERIA("ID, or name, or category field for search can't be empty"),
     CONFLICT_SEARCH_PARAMS("Search is available only by ID, or name, or category"),

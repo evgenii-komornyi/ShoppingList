@@ -25,19 +25,22 @@ public class Service {
         if (validationErrors.size() != 0) {
             response.setValidationErrors(validationErrors);
         } else {
-            Product product = new Product(createRequest.getProductName(),
-                                          createRequest.getProductPrice(),
-                                          ProductCategory.valueOf(createRequest.getProductCategory()));
-            if (createRequest.getProductDiscount() != null) {
-                product.setProductDiscount(createRequest.getProductDiscount());
-            }
-            product.setProductDescription(createRequest.getProductDescription());
+            FindRequest findRequest = new FindRequest();
+            findRequest.setProductName(createRequest.getProductName());
 
-            try {
-                response.setProduct(DB.create(product));
-            } catch (Exception e) {
+            if (DB.read(findRequest).size() != 0) {
                 validationErrors.add(ValidationErrors.DUPLICATE_NAME);
                 response.setValidationErrors(validationErrors);
+            } else {
+                Product product = new Product(createRequest.getProductName(),
+                        createRequest.getProductPrice(),
+                        ProductCategory.valueOf(createRequest.getProductCategory()));
+                if (createRequest.getProductDiscount() != null) {
+                    product.setProductDiscount(createRequest.getProductDiscount());
+                }
+                product.setProductDescription(createRequest.getProductDescription());
+
+                response.setProduct(DB.create(product));
             }
         }
         return response;
@@ -70,20 +73,18 @@ public class Service {
         List<ValidationErrors> validationErrors = validator.validateUpdateRequest(updateRequest);
         if (validationErrors.size() != 0) {
             response.setValidationErrors(validationErrors);
-            System.out.println("TEST");
         } else {
-            response.setUpdatedProduct(DB.updateByID(updateRequest));
-        }
-        return response;
-    }
+            FindRequest findRequest = new FindRequest();
+            findRequest.setProductName(updateRequest.getProductName());
 
-    public UpdateResponse updateByCategory(UpdateRequest updateRequest) {
-        UpdateResponse response = new UpdateResponse();
-        List<ValidationErrors> validationErrors = validator.validateUpdateRequest(updateRequest);
-        if (validationErrors.size() != 0) {
-            response.setValidationErrors(validationErrors);
-        } else {
-            response.setListOfUpdatedProducts(DB.update(updateRequest));
+            List<Product> list = DB.read(findRequest);
+
+            if (list.size() != 0 && !list.get(0).getProductID().equals(updateRequest.getProductID())) {
+                validationErrors.add(ValidationErrors.DUPLICATE_NAME);
+                response.setValidationErrors(validationErrors);
+            } else {
+                response.setUpdatedProduct(DB.updateByID(updateRequest));
+            }
         }
         return response;
     }

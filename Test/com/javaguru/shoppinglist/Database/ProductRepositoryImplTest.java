@@ -104,14 +104,22 @@ public class ProductRepositoryImplTest {
         db.create(cheese);
 
         Long id = meat.getProductID();
+        String name = meat.getProductName();
+        ProductCategory category = meat.getProductCategory();
+        BigDecimal discount = meat.getProductDiscount();
+        String description = meat.getProductDescription();
 
         updateRequest.setProductID(id);
 
         BigDecimal expected = new BigDecimal("60.0");
 
-        updateRequest.setNewProductPrice(expected);
+        updateRequest.setProductName(name);
+        updateRequest.setProductPrice(expected);
+        updateRequest.setProductCategory(String.valueOf(category));
+        updateRequest.setProductDiscount(discount);
+        updateRequest.setProductDescription(description);
 
-        db.update(updateRequest);
+        db.updateByID(updateRequest);
 
         assertEquals(expected, meat.getProductPrice());
     }

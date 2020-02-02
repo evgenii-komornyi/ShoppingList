@@ -1,6 +1,7 @@
 package com.javaguru.shoppinglist.Database;
 
 import com.javaguru.shoppinglist.Catalog.Product.Product;
+import com.javaguru.shoppinglist.Catalog.Product.ProductCategory;
 import com.javaguru.shoppinglist.Catalog.Product.Request.FindRequest;
 import com.javaguru.shoppinglist.Catalog.Product.Request.UpdateRequest;
 
@@ -13,11 +14,6 @@ public class ProductRepositoryImpl implements Repository<Product> {
     @Override
     public Product create(Product item) {
         if (!database.containsValue(item)) {
-            for (Product product : database.values()) {
-                if (product.getProductName().equalsIgnoreCase(item.getProductName())) {
-                    return null;
-                }
-            }
             database.put(item.getProductID(), item);
             return item;
         } else {
@@ -42,9 +38,9 @@ public class ProductRepositoryImpl implements Repository<Product> {
             sProductCategory = ((findRequest.getProductCategory() != null) ? String.valueOf(findRequest.getProductCategory()) : String.valueOf(product.getProductCategory()));
 
             if (sProductID.compareTo(product.getProductID()) == 0
-                    && sProductName.equals(product.getProductName())
+                    && sProductName.equalsIgnoreCase(product.getProductName())
                     && sProductPrice.compareTo(product.getProductPrice()) == 0
-                    && sProductCategory.equals(String.valueOf(product.getProductCategory()))) {
+                    && sProductCategory.equalsIgnoreCase(String.valueOf(product.getProductCategory()))) {
                 foundItems.add(product);
             }
         }
@@ -62,42 +58,16 @@ public class ProductRepositoryImpl implements Repository<Product> {
     }
 
     @Override
-    public List<Product> update(UpdateRequest updateRequest) {
-        List<Product> listOfUpdatedProducts = read(updateRequest);
-
-        for (Product product : listOfUpdatedProducts) {
-            if (updateRequest.getNewProductPrice() != null)
-            {
-                product.setProductPrice(updateRequest.getNewProductPrice());
-            }
-
-            if (updateRequest.getNewProductDiscount() != null)
-            {
-                product.setProductDiscount(updateRequest.getNewProductDiscount());
-            }
-
-            if (updateRequest.getNewDescription() != null)
-            {
-                product.setProductDescription(updateRequest.getNewDescription());
-            }
-        }
-        return listOfUpdatedProducts;
-    }
-
-    @Override
     public Product updateByID(UpdateRequest updateRequest) {
         Product product = null;
         if (database.containsKey(updateRequest.getProductID())) {
             product = database.get(updateRequest.getProductID());
-            if (updateRequest.getNewProductPrice() != null) {
-                product.setProductPrice(updateRequest.getNewProductPrice());
-            }
-            if (updateRequest.getNewProductDiscount() != null) {
-                product.setProductDiscount(updateRequest.getNewProductDiscount());
-            }
-            if (updateRequest.getNewDescription() != null) {
-                product.setProductDescription(updateRequest.getNewDescription());
-            }
+
+            product.setProductName(updateRequest.getProductName());
+            product.setProductPrice(updateRequest.getProductPrice());
+            product.setProductCategory(ProductCategory.valueOf(updateRequest.getProductCategory()));
+            product.setProductDiscount(updateRequest.getProductDiscount());
+            product.setProductDescription(updateRequest.getProductDescription());
         }
         return product;
     }

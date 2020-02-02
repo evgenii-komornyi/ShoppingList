@@ -119,7 +119,7 @@ public class ValidationTest {
 
     @Test
     public void validateCreateRequestWithoutName() {
-        assertThat(validate.validateCreateRequest(milkWithoutName)).contains(ValidationErrors.EMPTY_NAME);
+        assertThat(validate.validateCreateRequest(milkWithoutName)).contains(ValidationErrors.NAME_LENGTH_VIOLATION);
     }
 
     @Test
@@ -154,7 +154,7 @@ public class ValidationTest {
 
     @Test
     public void validateCreateRequestWithNegativeAndOutOfRangeDiscount() {
-        assertThat(validate.validateCreateRequest(milkWithNegativeAndOutOfRangeDiscount)).contains(ValidationErrors.INVALID_RANGE);
+        assertThat(validate.validateCreateRequest(milkWithNegativeAndOutOfRangeDiscount)).contains(ValidationErrors.INVALID_DISCOUNT_RANGE);
     }
 
     @Test
@@ -194,7 +194,7 @@ public class ValidationTest {
     @Test
     public void validateUpdateRequestWithAllFieldsFilled() {
         updateRequest.setProductID(Long.valueOf(0));
-        updateRequest.setProductCategory(ProductCategory.MILK);
+        updateRequest.setProductCategory(String.valueOf(ProductCategory.MILK));
 
         assertThat(validate.validateUpdateRequest(updateRequest)).contains(ValidationErrors.CONFLICT_UPDATE_PARAMS);
     }

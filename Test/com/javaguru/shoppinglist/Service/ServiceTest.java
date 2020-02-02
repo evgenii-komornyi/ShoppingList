@@ -94,9 +94,9 @@ public class ServiceTest {
         service.addProduct(meat);
         service.addProduct(cheese);
 
-        updateRequest.setProductCategory(ProductCategory.MILK);
+        findRequest.setProductCategory(ProductCategory.MILK);
 
-        assertEquals(2, service.findByCategory(updateRequest).getListOfFoundProducts().size());
+        assertEquals(2, service.findByCategory(findRequest).getListOfFoundProducts().size());
     }
 
     @Test
@@ -107,22 +107,11 @@ public class ServiceTest {
 
         updateRequest.setProductID(id);
         BigDecimal expectedDiscount = new BigDecimal("10.5");
-        updateRequest.setNewProductDiscount(expectedDiscount);
+        updateRequest.setProductDiscount(expectedDiscount);
 
         service.updateByID(updateRequest);
 
         assertEquals(expectedDiscount, service.updateByID(updateRequest).getUpdatedProduct().getProductDiscount());
-    }
-
-    @Test
-    public void updateByCategory() {
-        service.addProduct(milk);
-        service.addProduct(meat);
-
-        updateRequest.setProductCategory(ProductCategory.MILK);
-        updateRequest.setNewDescription("Its a good milk");
-
-        assertEquals(1, service.updateByCategory(updateRequest).getListOfUpdatedProducts().size());
     }
 
     @Test

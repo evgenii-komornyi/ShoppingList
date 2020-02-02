@@ -16,9 +16,11 @@ public class Validation {
         allErrors.addAll(validatePriceField(createFieldRequest.getProductPrice()));
         allErrors.addAll(validateCategoryField(createFieldRequest.getProductCategory()));
         allErrors.addAll(validateRangeOfDiscount(createFieldRequest.getProductDiscount()));
-        allErrors.addAll(validateDescriptionField(createFieldRequest.getProductDescription()));
+        if (!createFieldRequest.getProductDescription().isEmpty()) {
+            allErrors.addAll(validateDescriptionField(createFieldRequest.getProductDescription()));
+        }
 
-        allErrors.addAll(validateToMoreThanTwentyPrice(createFieldRequest.getProductPrice(), createFieldRequest.getProductDiscount()));
+        allErrors.addAll(validateDiscountPossibility(createFieldRequest.getProductPrice(), createFieldRequest.getProductDiscount()));
 
         return allErrors;
     }
@@ -26,11 +28,17 @@ public class Validation {
     public List<ValidationErrors> validateUpdateRequest(UpdateRequest updateFieldRequest) {
         List<ValidationErrors> allErrors = new ArrayList<>();
 
-        allErrors.addAll(validateSearchCriteria(updateFieldRequest));
+        allErrors.addAll(validateIDField(updateFieldRequest));
+        allErrors.addAll(validateNameField(updateFieldRequest.getProductName()));
+        allErrors.addAll(validatePriceField(updateFieldRequest.getProductPrice()));
+        allErrors.addAll(validateCategoryField(updateFieldRequest.getProductCategory()));
+        allErrors.addAll(validateRangeOfDiscount(updateFieldRequest.getProductDiscount()));
+        if (!updateFieldRequest.getProductDescription().isEmpty()) {
+            allErrors.addAll(validateDescriptionField(updateFieldRequest.getProductDescription()));
+        }
 
-        allErrors.addAll(validateNewPriceField(updateFieldRequest.getNewProductPrice()));
-        allErrors.addAll(validateRangeOfDiscount(updateFieldRequest.getNewProductDiscount()));
-        allErrors.addAll(validateDescriptionField(updateFieldRequest.getNewDescription()));
+        allErrors.addAll(validateDiscountPossibility(updateFieldRequest.getProductPrice(), updateFieldRequest.getProductDiscount()));
+        allErrors.addAll(validateSearchCriteria(updateFieldRequest));
 
         return allErrors;
     }
@@ -45,21 +53,9 @@ public class Validation {
 
     private List<ValidationErrors> validateNameField(String name) {
         List<ValidationErrors> errorsList = new ArrayList<>();
-
-        if (name.isEmpty()) {
+        if (name == null) {
             errorsList.add(ValidationErrors.EMPTY_NAME);
-            return errorsList;
-        }
-        errorsList.addAll(lengthCheck(name));
-        return errorsList;
-    }
-
-    private List<ValidationErrors> lengthCheck(String name) {
-        List<ValidationErrors> errorsList = new ArrayList<>();
-
-        if (name != null
-                && name.length() < 3
-                || name.length() > 32) {
+        } else if (name.length() < 3 || name.length() > 32) {
             errorsList.add(ValidationErrors.NAME_LENGTH_VIOLATION);
         }
         return errorsList;
@@ -70,28 +66,29 @@ public class Validation {
 
         if (price == null) {
             errorsList.add(ValidationErrors.EMPTY_PRICE);
+        } else {
+            errorsList.addAll(negativeNumberCheck(price));
         }
-        errorsList.addAll(negativeNumberCheck(price));
         return errorsList;
     }
 
     private List<ValidationErrors> negativeNumberCheck(BigDecimal price) {
         List<ValidationErrors> errorsList = new ArrayList<>();
 
-        if (price != null && price.compareTo(BigDecimal.valueOf(0)) <= 0) {
+        if (price.compareTo(BigDecimal.valueOf(0)) <= 0) {
             errorsList.add(ValidationErrors.NEGATIVE_OR_ZERO_PRICE);
         }
         return errorsList;
     }
 
-    private List<ValidationErrors> validateToMoreThanTwentyPrice(BigDecimal price, BigDecimal discount) {
+    private List<ValidationErrors> validateDiscountPossibility(BigDecimal price, BigDecimal discount) {
         List<ValidationErrors> errorsList = new ArrayList<>();
 
-        if (price != null
-            && price.compareTo(BigDecimal.valueOf(20)) < 0
-            && discount != null
-            && discount.compareTo(BigDecimal.ZERO) != 0) {
-            errorsList.add(ValidationErrors.DISCOUNT_APPLICATION_LIMIT_VIOLATION);
+        if (price != null && discount != null) {
+            if (price.compareTo(BigDecimal.valueOf(20)) < 0
+                    && discount.compareTo(BigDecimal.ZERO) != 0) {
+                errorsList.add(ValidationErrors.DISCOUNT_APPLICATION_LIMIT_VIOLATION);
+            }
         }
         return errorsList;
     }
@@ -108,10 +105,11 @@ public class Validation {
     private List<ValidationErrors> validateRangeOfDiscount(BigDecimal discount) {
         List<ValidationErrors> errorsList = new ArrayList<>();
 
-        if (discount != null
-                && (discount.compareTo(BigDecimal.valueOf(0)) < 0
-                || discount.compareTo(BigDecimal.valueOf(100)) > 0)) {
-            errorsList.add(ValidationErrors.INVALID_RANGE);
+        if (discount != null) {
+            if (discount.compareTo(BigDecimal.valueOf(0)) < 0
+                    || discount.compareTo(BigDecimal.valueOf(100)) > 0) {
+                errorsList.add(ValidationErrors.INVALID_DISCOUNT_RANGE);
+            }
         }
         return errorsList;
     }
@@ -119,32 +117,30 @@ public class Validation {
     private List<ValidationErrors> validateDescriptionField(String description) {
         List<ValidationErrors> errorsList = new ArrayList<>();
 
-        if (description != null && !description.isEmpty()
-                && (description.length() < 8 || description.length() > 60)) {
-            errorsList.add(ValidationErrors.DESCIPTION_LENGTH_VIOLATION);
+        if (description != null) {
+            if (description.length() < 8 || description.length() > 60) {
+                errorsList.add(ValidationErrors.DESCIPTION_LENGTH_VIOLATION);
+            }
         }
         return errorsList;
     }
 
-    private List<ValidationErrors> validateSearchCriteria(UpdateRequest searchCriteria) {
+    private List<ValidationErrors> validateSearchCriteria(UpdateRequest updateRequest) {
         List<ValidationErrors> allErrors = new ArrayList<>();
 
-        if (searchCriteria.getProductID() == null && searchCriteria.getProductCategory() == null)
-        {
+        if (updateRequest.getProductID() == null) {
             allErrors.add(ValidationErrors.NO_UPDATE_CRITERIA);
         }
 
-        if (searchCriteria.getProductID() != null && searchCriteria.getProductCategory() != null)
-        {
-            allErrors.add(ValidationErrors.CONFLICT_UPDATE_PARAMS);
-        }
         return allErrors;
     }
 
-    private List<ValidationErrors> validateNewPriceField(BigDecimal newPrice) {
+    private List<ValidationErrors> validateIDField(UpdateRequest updateRequest) {
         List<ValidationErrors> errorsList = new ArrayList<>();
 
-        errorsList.addAll(negativeNumberCheck(newPrice));
+        if (updateRequest.getProductID() == null) {
+            errorsList.add(ValidationErrors.NO_UPDATE_CRITERIA);
+        }
         return errorsList;
     }
 
@@ -153,15 +149,16 @@ public class Validation {
 
         if (searchCriteria.getProductID() == null
                 && searchCriteria.getProductName() == null
-                && searchCriteria.getProductCategory() == null)
-        {
+                && searchCriteria.getProductCategory() == null) {
             allErrors.add(ValidationErrors.NO_SEARCH_CRITERIA);
         }
 
-        if (searchCriteria.getProductID() != null && searchCriteria.getProductName() != null && searchCriteria.getProductCategory() != null)
-        {
+        if (searchCriteria.getProductID() != null
+                && searchCriteria.getProductName() != null
+                && searchCriteria.getProductCategory() != null) {
             allErrors.add(ValidationErrors.CONFLICT_SEARCH_PARAMS);
         }
         return allErrors;
     }
 }
+

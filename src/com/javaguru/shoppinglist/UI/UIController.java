@@ -285,8 +285,7 @@ public class UIController {
         BufferedReader reader = reader();
 
         System.out.println("Product name: ");
-        String productName;
-        productName = reader.readLine();
+        String productName = reader.readLine();
         productCreateRequest.setProductName(productName);
 
         System.out.println("Product price: ");
@@ -300,8 +299,7 @@ public class UIController {
         productCreateRequest.setProductDiscount(productDiscount);
 
         System.out.println("Product description: ");
-        String productDescription;
-        productDescription = reader.readLine();
+        String productDescription = readString();
         productCreateRequest.setProductDescription(productDescription);
 
         CreateResponse createResponse = productService.addProduct(productCreateRequest);
@@ -345,30 +343,51 @@ public class UIController {
         System.out.println("Enter product ID: ");
         String productID = reader.readLine();
 
-        BigDecimal newProductPrice = readPrice();
-
-        BigDecimal newProductDiscount = readDiscount();
-
-        System.out.println("Enter new description:");
-        String newProductDescription = readString();
-
-        UpdateRequest request = new UpdateRequest();
+        FindRequest findRequest = new FindRequest();
         if (!productID.isEmpty()) {
-            request.setProductID(Long.valueOf(productID));
-            request.setNewProductPrice(newProductPrice);
-            request.setNewProductDiscount(newProductDiscount);
-            request.setNewDescription(newProductDescription);
-            printProduct(productService.updateByID(request).getUpdatedProduct());
-        } else {
-            return;
-        }
+            findRequest.setProductID(Long.valueOf(productID));
 
-        UpdateResponse updateResponse = productService.updateByID(request);
+            Product product = productService.findByID(findRequest).getFoundProduct();
 
-        if (updateResponse.hasErrors()) {
-            printErrorsList(updateResponse.getValidationErrors());
+            if (product != null) {
+                System.out.println("Product name: ");
+                String productName = readString();
+                productName = (productName.isEmpty() ? product.getProductName() : productName);
+
+                System.out.println("Product price:");
+                BigDecimal productPrice = readBigDecimal();
+                productPrice = (productPrice == null ? product.getProductPrice() : productPrice);
+
+                String productCategory = readCategories();
+                productCategory = (productCategory == null ? String.valueOf(product.getProductCategory()) : productCategory);
+
+                BigDecimal productDiscount = readDiscount();
+
+                System.out.println("Product description: ");
+                String productDescription = readString();
+
+                UpdateRequest updateRequest = new UpdateRequest();
+
+                updateRequest.setProductID(Long.valueOf(productID));
+                updateRequest.setProductName(productName);
+                updateRequest.setProductCategory(productCategory);
+                updateRequest.setProductPrice(productPrice);
+                updateRequest.setProductDiscount(productDiscount);
+                updateRequest.setProductDescription(productDescription);
+
+                UpdateResponse updateResponse = productService.updateByID(updateRequest);
+
+                if (updateResponse.hasErrors()) {
+                    printErrorsList(updateResponse.getValidationErrors());
+                } else {
+                    printProduct(updateResponse.getUpdatedProduct());
+                    System.out.println("Product was successfuly updated.");
+                }
+            } else {
+                System.out.println("Nothing to update");
+            }
         } else {
-            System.out.println("Product was successfuly updated.");
+            System.out.println("ID can't be empty");
         }
     }
 
@@ -389,17 +408,13 @@ public class UIController {
     }
 
     private void printProduct(Product product) {
-        try {
-            System.out.println("ID: " + product.getProductID() +
+        System.out.println("ID: " + product.getProductID() +
                     ", Product: " + product.getProductName() +
                     ", Regular price: " + product.getProductPrice() + "$" + ", " +
                     "Discount: " + product.getProductDiscount() + "%, " +
                     "Actual price: " + product.calculateActualPrice() + "$" + ", " +
                     "Category: " + product.getProductCategory() + ", " +
                     "Description: " + product.getProductDescription() + ".");
-        } catch (NullPointerException e) {
-            System.out.println("Product doesn't exist");
-        }
     }
 
     private void printProductsList(List<Product> productsList) {
