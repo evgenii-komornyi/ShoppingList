@@ -190,12 +190,4 @@ public class ValidationTest {
     public void validateUpdateRequestWithEmptyFields() {
         assertThat(validate.validateUpdateRequest(updateRequest)).contains(ValidationErrors.NO_UPDATE_CRITERIA);
     }
-
-    @Test
-    public void validateUpdateRequestWithAllFieldsFilled() {
-        updateRequest.setProductID(Long.valueOf(0));
-        updateRequest.setProductCategory(String.valueOf(ProductCategory.MILK));
-
-        assertThat(validate.validateUpdateRequest(updateRequest)).contains(ValidationErrors.CONFLICT_UPDATE_PARAMS);
-    }
 }

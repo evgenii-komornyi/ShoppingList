@@ -5,6 +5,7 @@ import com.javaguru.shoppinglist.Catalog.Product.ProductCategory;
 import com.javaguru.shoppinglist.Catalog.Product.Request.CreateRequest;
 import com.javaguru.shoppinglist.Catalog.Product.Request.FindRequest;
 import com.javaguru.shoppinglist.Catalog.Product.Request.UpdateRequest;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -58,6 +59,11 @@ public class ServiceTest {
         cheese.setProductDescription("Cheese from the Russia");
     }
 
+    @After
+    public void drop() {
+        service.drop();
+    }
+
     @Test
     public void testToAddProductToDatabase() {
         service.addProduct(milk);
@@ -80,10 +86,10 @@ public class ServiceTest {
 
     @Test
     public void findByID() {
-        service.addProduct(milk);
+        Long id = service.addProduct(milk).getProduct().getProductID();
         service.addProduct(meat);
 
-        findRequest.setProductID(0L);
+        findRequest.setProductID(id);
 
         assertEquals(milk.getProductName(), service.findByID(findRequest).getFoundProduct().getProductName());
     }
@@ -102,12 +108,17 @@ public class ServiceTest {
     @Test
     public void updateByID() {
         Long id = service.addProduct(milk).getProduct().getProductID();
+
         service.addProduct(meat);
         service.addProduct(bread);
 
         updateRequest.setProductID(id);
         BigDecimal expectedDiscount = new BigDecimal("10.5");
+        updateRequest.setProductName("Milk");
+        updateRequest.setProductPrice(new BigDecimal("43.2"));
+        updateRequest.setProductCategory("MILK");
         updateRequest.setProductDiscount(expectedDiscount);
+        updateRequest.setProductDescription("Good cow milk from Latvia");
 
         service.updateByID(updateRequest);
 

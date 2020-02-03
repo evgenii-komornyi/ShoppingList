@@ -4,6 +4,7 @@ import com.javaguru.shoppinglist.Catalog.Product.Product;
 import com.javaguru.shoppinglist.Catalog.Product.ProductCategory;
 import com.javaguru.shoppinglist.Catalog.Product.Request.FindRequest;
 import com.javaguru.shoppinglist.Catalog.Product.Request.UpdateRequest;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,6 +38,11 @@ public class ProductRepositoryImplTest {
         meat = new Product("Beef", new BigDecimal("45.8"), ProductCategory.MEAT);
         bread = new Product("Bread", new BigDecimal("61.5"), ProductCategory.BREAD);
         cheese = new Product("Cheese", new BigDecimal("55"), ProductCategory.MILK);
+    }
+
+    @After
+    public void drop() {
+        db.drop();
     }
 
     @Test

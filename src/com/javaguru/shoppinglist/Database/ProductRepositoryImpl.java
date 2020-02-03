@@ -85,4 +85,8 @@ public class ProductRepositoryImpl implements Repository<Product> {
     public Map<Long, Product> getAllDatabase() {
         return database;
     }
+
+    public void drop() {
+        database.clear();
+    }
 }

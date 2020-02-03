@@ -96,4 +96,8 @@ public class Service {
     public Map<Long, Product> getAllDatabase() {
         return DB.getAllDatabase();
     }
+
+    public void drop() {
+        DB.drop();
+    }
 }
