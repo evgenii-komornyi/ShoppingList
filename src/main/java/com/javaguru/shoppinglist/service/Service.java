@@ -9,19 +9,23 @@ import com.javaguru.shoppinglist.domain.Product.Response.CreateResponse;
 import com.javaguru.shoppinglist.domain.Product.Response.FindResponse;
 import com.javaguru.shoppinglist.domain.Product.Response.UpdateResponse;
 import com.javaguru.shoppinglist.repository.ProductRepositoryImpl;
-import com.javaguru.shoppinglist.service.validation.Validation;
-import com.javaguru.shoppinglist.service.validation.ValidationErrors;
+import com.javaguru.shoppinglist.service.validation.*;
 
 import java.util.List;
 import java.util.Map;
 
 public class Service {
-    private ProductRepositoryImpl DB = new ProductRepositoryImpl();
-    private Validation validator = new Validation();
+    private final ProductRepositoryImpl DB;
+    private final Validation validation;
+
+    public Service(ProductRepositoryImpl DB, Validation validation) {
+        this.DB = DB;
+        this.validation = validation;
+    }
 
     public CreateResponse addProduct(CreateRequest createRequest) {
         CreateResponse response = new CreateResponse();
-        List<ValidationErrors> validationErrors = validator.validateCreateRequest(createRequest);
+        List<ValidationErrors> validationErrors = validation.getCreateRequestValidation().validateCreateRequest(createRequest);
         if (validationErrors.size() != 0) {
             response.setValidationErrors(validationErrors);
         } else {
@@ -48,7 +52,7 @@ public class Service {
 
     public FindResponse findByID(FindRequest findRequest) {
         FindResponse response = new FindResponse();
-        List<ValidationErrors> validationErrors = validator.validateFindRequest(findRequest);
+        List<ValidationErrors> validationErrors = validation.getFindRequestValidation().validateFindRequest(findRequest);
         if (validationErrors.size() != 0) {
             response.setValidationErrors(validationErrors);
         } else {
@@ -59,7 +63,7 @@ public class Service {
 
     public FindResponse findByCategory(FindRequest findRequest) {
         FindResponse response = new FindResponse();
-        List<ValidationErrors> validationErrors = validator.validateFindRequest(findRequest);
+        List<ValidationErrors> validationErrors = validation.getFindRequestValidation().validateFindRequest(findRequest);
         if (validationErrors.size() != 0) {
             response.setValidationErrors(validationErrors);
         } else {
@@ -70,7 +74,7 @@ public class Service {
 
     public UpdateResponse updateByID(UpdateRequest updateRequest) {
         UpdateResponse response = new UpdateResponse();
-        List<ValidationErrors> validationErrors = validator.validateUpdateRequest(updateRequest);
+        List<ValidationErrors> validationErrors = validation.getUpdateRequestValidation().validateUpdateRequest(updateRequest);
         if (validationErrors.size() != 0) {
             response.setValidationErrors(validationErrors);
         } else {

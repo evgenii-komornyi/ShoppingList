@@ -18,7 +18,13 @@ import java.util.List;
 import java.util.Scanner;
 
 public class UIController {
-    private Service productService = new Service();
+    private final static int MIN_VALUE = 0;
+    private final static int MAX_VALUE = 8;
+    private Service productService;
+
+    public UIController(Service productService) {
+        this.productService = productService;
+    }
 
     public void startUI() {
         BufferedReader keyPress = reader();
@@ -61,11 +67,19 @@ public class UIController {
                                     break;
                                 case "2":
                                 case "byid":
-                                    findProductByID();
+                                    try {
+                                        findProductByID();
+                                    } catch (NumberFormatException e) {
+                                        System.out.println("ID can't be non numeric");
+                                    }
                                     break;
                                 case "3":
                                 case "bycat":
-                                    findProductByCategory();
+                                    try {
+                                        findProductByCategory();
+                                    } catch (IllegalArgumentException e) {
+                                        System.out.println("Category can be only from " + MIN_VALUE + " to " + MAX_VALUE);
+                                    }
                                     break;
                                 case "?":
                                 case "help":
@@ -120,7 +134,7 @@ public class UIController {
 
     private void readMainMenuCommands() {
         try {
-            File commands = new File("src/com/javaguru/shoppinglist/UI/MainMenuCommands");
+            File commands = new File("src/main/java/com/javaguru/shoppinglist/consoleUI/MainMenuCommands");
             Scanner reader = new Scanner(commands);
             while (reader.hasNextLine()) {
                 String data = reader.nextLine();
@@ -135,7 +149,7 @@ public class UIController {
     private void readCommandsForPrint() {
         try
         {
-            File commands = new File("src/com/javaguru/shoppinglist/UI/GetMenuCommands");
+            File commands = new File("src/main/java/com/javaguru/shoppinglist/consoleUI/GetMenuCommands");
             Scanner reader = new Scanner(commands);
             while (reader.hasNextLine())
             {
@@ -152,7 +166,7 @@ public class UIController {
     private void readCommandsForUpdate() {
         try
         {
-            File commands = new File("src/com/javaguru/shoppinglist/UI/UpdateMenuCommands");
+            File commands = new File("src/main/java/com/javaguru/shoppinglist/consoleUI/UpdateMenuCommands");
             Scanner reader = new Scanner(commands);
             while (reader.hasNextLine())
             {
@@ -324,11 +338,12 @@ public class UIController {
         String productCategory = readCategories();
 
         FindRequest findRequest = new FindRequest();
+
         if (productCategory != null) {
             findRequest.setProductCategory(ProductCategory.valueOf(productCategory));
             printProductsList(productService.findByCategory(findRequest).getListOfFoundProducts());
         } else {
-            return;
+            System.out.println("Category can't be empty");
         }
     }
 
