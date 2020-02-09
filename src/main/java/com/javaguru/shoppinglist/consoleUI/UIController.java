@@ -418,11 +418,12 @@ public class UIController {
     }
 
     private void printProduct(Product product) {
+        String euro = "\u20ac";
         System.out.println("ID: " + product.getProductID() +
                     ", Product: " + product.getProductName() +
-                    ", Regular price: " + product.getProductPrice() + "$" + ", " +
+                    ", Regular price: " + product.getProductPrice() + euro + ", " +
                     "Discount: " + product.getProductDiscount() + "%, " +
-                    "Actual price: " + product.calculateActualPrice() + "$" + ", " +
+                    "Actual price: " + product.calculateActualPrice() + euro + ", " +
                     "Category: " + product.getProductCategory() + ", " +
                     "Description: " + product.getProductDescription() + ".");
     }

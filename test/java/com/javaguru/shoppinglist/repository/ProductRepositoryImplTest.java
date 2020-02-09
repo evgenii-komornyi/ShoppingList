@@ -4,7 +4,6 @@ import com.javaguru.shoppinglist.domain.Product.Product;
 import com.javaguru.shoppinglist.domain.Product.ProductCategory;
 import com.javaguru.shoppinglist.domain.Product.Request.FindRequest;
 import com.javaguru.shoppinglist.domain.Product.Request.UpdateRequest;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -40,11 +39,6 @@ public class ProductRepositoryImplTest {
         cheese = new Product("Cheese", new BigDecimal("55"), ProductCategory.MILK);
     }
 
-    @After
-    public void drop() {
-        db.drop();
-    }
-
     @Test
     public void testForCreateProductInDatabase() {
         db.create(milk);
@@ -53,6 +47,8 @@ public class ProductRepositoryImplTest {
         Map<Long, Product> list = db.getAllDatabase();
 
         assertEquals(expectedSizeList, list.size());
+
+        db.drop();
     }
 
     @Test
@@ -64,6 +60,8 @@ public class ProductRepositoryImplTest {
         int expectedSize = 3;
 
         assertEquals(expectedSize, db.getAllDatabase().size());
+
+        db.drop();
     }
 
     @Test
@@ -76,6 +74,8 @@ public class ProductRepositoryImplTest {
         findRequest.setProductID(id);
 
         assertEquals(Collections.singletonList(milk), db.read(findRequest));
+
+        db.drop();
     }
 
     @Test
@@ -86,6 +86,8 @@ public class ProductRepositoryImplTest {
         findRequest.setProductName("Milk");
 
         assertEquals(Collections.singletonList(milk), db.read(findRequest));
+
+        db.drop();
     }
 
     @Test
@@ -101,6 +103,8 @@ public class ProductRepositoryImplTest {
         expected.add(cheese);
 
         assertEquals(expected, db.read(findRequest));
+
+        db.drop();
     }
 
     @Test
@@ -128,6 +132,8 @@ public class ProductRepositoryImplTest {
         db.updateByID(updateRequest);
 
         assertEquals(expected, meat.getProductPrice());
+
+        db.drop();
     }
 
     @Test
@@ -142,5 +148,7 @@ public class ProductRepositoryImplTest {
         findRequest.setProductID(id);
 
         assertTrue(db.delete(findRequest));
+
+        db.drop();
     }
 }

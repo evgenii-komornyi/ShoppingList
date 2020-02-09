@@ -23,7 +23,6 @@ public class CreateRequestValidationTest {
     private BigDecimal price = new BigDecimal("35");
     private String  category = "MILK";
     private BigDecimal discount = new BigDecimal("20");
-    private String description = "BlaBlaBlaBlaBla";
 
     private CreateRequest productWithoutName = productWithoutName();
 
