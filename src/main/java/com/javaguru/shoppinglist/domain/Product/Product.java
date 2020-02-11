@@ -11,7 +11,7 @@ public class Product {
     private String productName;
     private BigDecimal productPrice;
     private ProductCategory productCategory;
-    private BigDecimal productDiscount = BigDecimal.ZERO;
+    private BigDecimal productDiscount;
     private String productDescription = "";
 
     public Product(String productName, BigDecimal productPrice, ProductCategory productCategory) {
