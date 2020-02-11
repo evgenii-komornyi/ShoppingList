@@ -1,12 +1,12 @@
 package com.javaguru.shoppinglist.consoleUI;
 
-import com.javaguru.shoppinglist.domain.Product.Product;
-import com.javaguru.shoppinglist.domain.Product.ProductCategory;
-import com.javaguru.shoppinglist.domain.Product.Request.CreateRequest;
-import com.javaguru.shoppinglist.domain.Product.Request.FindRequest;
-import com.javaguru.shoppinglist.domain.Product.Request.UpdateRequest;
-import com.javaguru.shoppinglist.domain.Product.Response.CreateResponse;
-import com.javaguru.shoppinglist.domain.Product.Response.UpdateResponse;
+import com.javaguru.shoppinglist.domain.product.Product;
+import com.javaguru.shoppinglist.domain.product.ProductCategory;
+import com.javaguru.shoppinglist.domain.product.request.CreateRequest;
+import com.javaguru.shoppinglist.domain.product.request.FindRequest;
+import com.javaguru.shoppinglist.domain.product.request.UpdateRequest;
+import com.javaguru.shoppinglist.domain.product.response.CreateResponse;
+import com.javaguru.shoppinglist.domain.product.response.UpdateResponse;
 import com.javaguru.shoppinglist.service.Service;
 import com.javaguru.shoppinglist.service.validation.ValidationErrors;
 
@@ -281,7 +281,7 @@ public class UIController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return (string.isEmpty()) ? "" : string;
+        return (string.isEmpty()) ? null : string;
     }
 
     private BigDecimal readDiscount() {
@@ -418,13 +418,16 @@ public class UIController {
     }
 
     private void printProduct(Product product) {
-        System.out.println("ID: " + product.getProductID() +
+        System.out.print("ID: " + product.getProductID() +
                     ", Product: " + product.getProductName() +
                     ", Regular price: " + product.getProductPrice() + "$" + ", " +
                     "Discount: " + product.getProductDiscount() + "%, " +
                     "Actual price: " + product.calculateActualPrice() + "$" + ", " +
-                    "Category: " + product.getProductCategory() + ", " +
-                    "Description: " + product.getProductDescription() + ".");
+                    "Category: " + product.getProductCategory());
+        if (product.getProductDescription() != null) {
+            System.out.print(", Description: " + product.getProductDescription());
+        }
+        System.out.println();
     }
 
     private void printProductsList(List<Product> productsList) {

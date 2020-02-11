@@ -1,6 +1,6 @@
-package com.javaguru.shoppinglist.domain.Product.Response;
+package com.javaguru.shoppinglist.domain.product.response;
 
-import com.javaguru.shoppinglist.domain.Product.Product;
+import com.javaguru.shoppinglist.domain.product.Product;
 
 import java.util.List;
 import java.util.Objects;

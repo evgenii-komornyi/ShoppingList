@@ -1,33 +1,26 @@
-package com.javaguru.shoppinglist.domain.Product;
+package com.javaguru.shoppinglist.domain.product;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Objects;
 
 public class Product {
-    private static Long countID = 0L;
-
     private Long productID;
     private String productName;
     private BigDecimal productPrice;
     private ProductCategory productCategory;
     private BigDecimal productDiscount;
-    private String productDescription = "";
+    private String productDescription;
 
     public Product(String productName, BigDecimal productPrice, ProductCategory productCategory) {
-        this.productID = incrementCountID();
         this.productName = productName;
         this.productPrice = productPrice;
         this.productCategory = productCategory;
     }
 
-    private Long incrementCountID() {
-        return countID++;
-    }
-
     public BigDecimal calculateActualPrice() {
         BigDecimal productActualPrice = productPrice.subtract((productPrice.multiply(productDiscount)).divide(BigDecimal.valueOf(100)));
-        return productActualPrice.setScale(2, RoundingMode.HALF_EVEN);
+            return productActualPrice.setScale(2, RoundingMode.HALF_EVEN);
     }
 
     @Override

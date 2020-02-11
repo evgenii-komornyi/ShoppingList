@@ -1,7 +1,7 @@
 package com.javaguru.shoppinglist.repository;
 
-import com.javaguru.shoppinglist.domain.Product.Request.FindRequest;
-import com.javaguru.shoppinglist.domain.Product.Request.UpdateRequest;
+import com.javaguru.shoppinglist.domain.product.request.FindRequest;
+import com.javaguru.shoppinglist.domain.product.request.UpdateRequest;
 
 import java.util.List;
 

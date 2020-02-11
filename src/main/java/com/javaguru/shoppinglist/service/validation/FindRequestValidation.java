@@ -1,6 +1,6 @@
 package com.javaguru.shoppinglist.service.validation;
 
-import com.javaguru.shoppinglist.domain.Product.Request.FindRequest;
+import com.javaguru.shoppinglist.domain.product.request.FindRequest;
 
 import java.util.ArrayList;
 import java.util.List;

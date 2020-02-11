@@ -1,10 +1,9 @@
 package com.javaguru.shoppinglist.service.validation;
 
-import com.javaguru.shoppinglist.domain.Product.ProductCategory;
-import com.javaguru.shoppinglist.domain.Product.Request.FindRequest;
+import com.javaguru.shoppinglist.domain.product.ProductCategory;
+import com.javaguru.shoppinglist.domain.product.request.FindRequest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,7 +14,6 @@ public class FindRequestValidationTest {
     private FindRequestValidation findRequestValidation = new FindRequestValidation();
     private UpdateRequestValidation updateRequestValidation = new UpdateRequestValidation();
 
-    @InjectMocks
     private Validation victim = new Validation(createRequestValidation, findRequestValidation, updateRequestValidation);
 
     private FindRequest findRequest = new FindRequest();

@@ -1,16 +1,18 @@
 package com.javaguru.shoppinglist.service;
 
-import com.javaguru.shoppinglist.domain.Product.Product;
-import com.javaguru.shoppinglist.domain.Product.ProductCategory;
-import com.javaguru.shoppinglist.domain.Product.Request.CreateRequest;
-import com.javaguru.shoppinglist.domain.Product.Request.FindRequest;
-import com.javaguru.shoppinglist.domain.Product.Request.UpdateRequest;
-import com.javaguru.shoppinglist.domain.Product.Response.CreateResponse;
-import com.javaguru.shoppinglist.domain.Product.Response.FindResponse;
-import com.javaguru.shoppinglist.domain.Product.Response.UpdateResponse;
+import com.javaguru.shoppinglist.domain.product.Product;
+import com.javaguru.shoppinglist.domain.product.ProductCategory;
+import com.javaguru.shoppinglist.domain.product.request.CreateRequest;
+import com.javaguru.shoppinglist.domain.product.request.FindRequest;
+import com.javaguru.shoppinglist.domain.product.request.UpdateRequest;
+import com.javaguru.shoppinglist.domain.product.response.CreateResponse;
+import com.javaguru.shoppinglist.domain.product.response.FindResponse;
+import com.javaguru.shoppinglist.domain.product.response.UpdateResponse;
 import com.javaguru.shoppinglist.repository.ProductRepositoryImpl;
 import com.javaguru.shoppinglist.service.validation.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 
@@ -26,22 +28,26 @@ public class Service {
     public CreateResponse addProduct(CreateRequest createRequest) {
         CreateResponse response = new CreateResponse();
         List<ValidationErrors> validationErrors = validation.getCreateRequestValidation().validateCreateRequest(createRequest);
-        if (validationErrors.size() != 0) {
+        if (!validationErrors.isEmpty()) {
             response.setValidationErrors(validationErrors);
         } else {
             FindRequest findRequest = new FindRequest();
             findRequest.setProductName(createRequest.getProductName());
 
-            if (DB.read(findRequest).size() != 0) {
+            if (!DB.read(findRequest).isEmpty()) {
                 validationErrors.add(ValidationErrors.DUPLICATE_NAME);
                 response.setValidationErrors(validationErrors);
             } else {
                 Product product = new Product(createRequest.getProductName(),
-                        createRequest.getProductPrice(),
-                        ProductCategory.valueOf(createRequest.getProductCategory()));
-                if (createRequest.getProductDiscount() != null) {
-                    product.setProductDiscount(createRequest.getProductDiscount());
+                                              createRequest.getProductPrice(),
+                                              ProductCategory.valueOf(createRequest.getProductCategory()));
+
+                if (createRequest.getProductDiscount() == null) {
+                    product.setProductDiscount(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_EVEN));
+                } else {
+                    product.setProductDiscount(createRequest.getProductDiscount().setScale(2, RoundingMode.HALF_EVEN));
                 }
+
                 product.setProductDescription(createRequest.getProductDescription());
 
                 response.setProduct(DB.create(product));
@@ -53,7 +59,7 @@ public class Service {
     public FindResponse findByID(FindRequest findRequest) {
         FindResponse response = new FindResponse();
         List<ValidationErrors> validationErrors = validation.getFindRequestValidation().validateFindRequest(findRequest);
-        if (validationErrors.size() != 0) {
+        if (!validationErrors.isEmpty()) {
             response.setValidationErrors(validationErrors);
         } else {
             response.setFoundProduct(DB.readByID(findRequest));
@@ -64,7 +70,7 @@ public class Service {
     public FindResponse findByCategory(FindRequest findRequest) {
         FindResponse response = new FindResponse();
         List<ValidationErrors> validationErrors = validation.getFindRequestValidation().validateFindRequest(findRequest);
-        if (validationErrors.size() != 0) {
+        if (!validationErrors.isEmpty()) {
             response.setValidationErrors(validationErrors);
         } else {
             response.setListOfFoundProducts(DB.read(findRequest));
@@ -75,7 +81,7 @@ public class Service {
     public UpdateResponse updateByID(UpdateRequest updateRequest) {
         UpdateResponse response = new UpdateResponse();
         List<ValidationErrors> validationErrors = validation.getUpdateRequestValidation().validateUpdateRequest(updateRequest);
-        if (validationErrors.size() != 0) {
+        if (!validationErrors.isEmpty()) {
             response.setValidationErrors(validationErrors);
         } else {
             FindRequest findRequest = new FindRequest();
@@ -83,7 +89,7 @@ public class Service {
 
             List<Product> list = DB.read(findRequest);
 
-            if (list.size() != 0 && !list.get(0).getProductID().equals(updateRequest.getProductID())) {
+            if (!list.isEmpty() && !list.get(0).getProductID().equals(updateRequest.getProductID())) {
                 validationErrors.add(ValidationErrors.DUPLICATE_NAME);
                 response.setValidationErrors(validationErrors);
             } else {

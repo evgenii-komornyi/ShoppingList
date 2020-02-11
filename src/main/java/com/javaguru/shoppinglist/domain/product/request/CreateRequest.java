@@ -1,4 +1,4 @@
-package com.javaguru.shoppinglist.domain.Product.Request;
+package com.javaguru.shoppinglist.domain.product.request;
 
 import java.math.BigDecimal;
 

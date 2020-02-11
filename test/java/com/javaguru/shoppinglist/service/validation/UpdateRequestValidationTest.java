@@ -1,9 +1,8 @@
 package com.javaguru.shoppinglist.service.validation;
 
-import com.javaguru.shoppinglist.domain.Product.Request.UpdateRequest;
+import com.javaguru.shoppinglist.domain.product.request.UpdateRequest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,7 +13,6 @@ public class UpdateRequestValidationTest {
     private FindRequestValidation findRequestValidation = new FindRequestValidation();
     private UpdateRequestValidation updateRequestValidation = new UpdateRequestValidation();
 
-    @InjectMocks
     private Validation victim = new Validation(createRequestValidation, findRequestValidation, updateRequestValidation);
 
     private UpdateRequest updateRequest = new UpdateRequest();

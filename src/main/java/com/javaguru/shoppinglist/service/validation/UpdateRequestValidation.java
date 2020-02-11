@@ -1,6 +1,6 @@
 package com.javaguru.shoppinglist.service.validation;
 
-import com.javaguru.shoppinglist.domain.Product.Request.UpdateRequest;
+import com.javaguru.shoppinglist.domain.product.request.UpdateRequest;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

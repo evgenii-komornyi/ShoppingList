@@ -1,6 +1,6 @@
 package com.javaguru.shoppinglist.service.validation;
 
-import com.javaguru.shoppinglist.domain.Product.Request.CreateRequest;
+import com.javaguru.shoppinglist.domain.product.request.CreateRequest;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ public class CreateRequestValidation {
         allErrors.addAll(validatePriceField(createFieldRequest.getProductPrice()));
         allErrors.addAll(validateCategoryField(createFieldRequest.getProductCategory()));
         allErrors.addAll(validateRangeOfDiscount(createFieldRequest.getProductDiscount()));
-        if (!createFieldRequest.getProductDescription().isEmpty()) {
+        if (createFieldRequest.getProductDescription() != null && !createFieldRequest.getProductDescription().isEmpty()) {
             allErrors.addAll(validateDescriptionField(createFieldRequest.getProductDescription()));
         }
 

@@ -1,4 +1,4 @@
-package com.javaguru.shoppinglist.domain.Product.Response;
+package com.javaguru.shoppinglist.domain.product.response;
 
 import com.javaguru.shoppinglist.service.validation.ValidationErrors;
 
@@ -9,7 +9,7 @@ public abstract class BasicResponse {
     private List<ValidationErrors> validationErrors;
 
     public boolean hasErrors() {
-        return (validationErrors != null && validationErrors.size() != 0);
+        return (validationErrors != null && !validationErrors.isEmpty());
     }
 
     @Override

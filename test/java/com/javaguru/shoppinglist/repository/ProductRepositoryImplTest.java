@@ -1,9 +1,9 @@
 package com.javaguru.shoppinglist.repository;
 
-import com.javaguru.shoppinglist.domain.Product.Product;
-import com.javaguru.shoppinglist.domain.Product.ProductCategory;
-import com.javaguru.shoppinglist.domain.Product.Request.FindRequest;
-import com.javaguru.shoppinglist.domain.Product.Request.UpdateRequest;
+import com.javaguru.shoppinglist.domain.product.Product;
+import com.javaguru.shoppinglist.domain.product.ProductCategory;
+import com.javaguru.shoppinglist.domain.product.request.FindRequest;
+import com.javaguru.shoppinglist.domain.product.request.UpdateRequest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

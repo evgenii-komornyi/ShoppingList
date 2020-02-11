@@ -1,4 +1,4 @@
-package com.javaguru.shoppinglist.domain.Product.Request;
+package com.javaguru.shoppinglist.domain.product.request;
 
 public class UpdateRequest extends CreateRequest {
     private Long productID;

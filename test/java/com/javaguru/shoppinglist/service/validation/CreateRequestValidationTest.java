@@ -1,9 +1,8 @@
 package com.javaguru.shoppinglist.service.validation;
 
-import com.javaguru.shoppinglist.domain.Product.Request.CreateRequest;
+import com.javaguru.shoppinglist.domain.product.request.CreateRequest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
@@ -16,14 +15,12 @@ public class CreateRequestValidationTest {
     private FindRequestValidation findRequestValidation = new FindRequestValidation();
     private UpdateRequestValidation updateRequestValidation = new UpdateRequestValidation();
 
-    @InjectMocks
     private Validation victim = new Validation(createRequestValidation, findRequestValidation, updateRequestValidation);
 
     private String name = "Milk";
     private BigDecimal price = new BigDecimal("35");
     private String  category = "MILK";
     private BigDecimal discount = new BigDecimal("20");
-    private String description = "BlaBlaBlaBlaBla";
 
     private CreateRequest productWithoutName = productWithoutName();
 

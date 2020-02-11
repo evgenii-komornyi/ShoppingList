@@ -1,4 +1,4 @@
-package com.javaguru.shoppinglist.domain.Product;
+package com.javaguru.shoppinglist.domain.product;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,8 +8,6 @@ public enum ProductCategory {
     ALCOHOL, BREAD, FISH, FRUITS, MEAT, MILK, SOFT_DRINKS, SWEETS, VEGETABLES;
 
     public static List<ProductCategory> getCategories() {
-        List<ProductCategory> categories = new ArrayList<>(Arrays.asList(ProductCategory.values()));
-
-        return categories;
+        return new ArrayList<>(Arrays.asList(ProductCategory.values()));
     }
 }

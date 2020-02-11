@@ -1,24 +1,31 @@
 package com.javaguru.shoppinglist.repository;
 
-import com.javaguru.shoppinglist.domain.Product.Product;
-import com.javaguru.shoppinglist.domain.Product.ProductCategory;
-import com.javaguru.shoppinglist.domain.Product.Request.FindRequest;
-import com.javaguru.shoppinglist.domain.Product.Request.UpdateRequest;
+import com.javaguru.shoppinglist.domain.product.Product;
+import com.javaguru.shoppinglist.domain.product.ProductCategory;
+import com.javaguru.shoppinglist.domain.product.request.FindRequest;
+import com.javaguru.shoppinglist.domain.product.request.UpdateRequest;
 
 import java.math.BigDecimal;
 import java.util.*;
 
 public class ProductRepositoryImpl implements Repository<Product> {
+    private static Long countID = 0L;
     private static Map<Long, Product> database = new HashMap<>();
 
     @Override
     public Product create(Product item) {
         if (!database.containsValue(item)) {
-            database.put(item.getProductID(), item);
+            Long id = incrementCountID();
+            item.setProductID(id);
+            database.put(id, item);
             return item;
         } else {
             return null;
         }
+    }
+
+    private Long incrementCountID() {
+        return countID++;
     }
 
     @Override
