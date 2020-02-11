@@ -26,9 +26,7 @@ public enum ValidationErrors {
     }
 
     public static List<ValidationErrors> getValidationErrors() {
-        List<ValidationErrors> validationErrors = new ArrayList<>(Arrays.asList(ValidationErrors.values()));
-
-        return validationErrors;
+        return new ArrayList<>(Arrays.asList(ValidationErrors.values()));
     }
 
     public String getResponse() {
