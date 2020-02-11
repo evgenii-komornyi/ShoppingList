@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FindRequestValidation {
-    List<ValidationErrors> allErrors = new ArrayList<>();
-
     public List<ValidationErrors> validateFindRequest(FindRequest findFieldRequest) {
+        List<ValidationErrors> allErrors = new ArrayList<>();
+
         allErrors.addAll(validateSearchCriteria(findFieldRequest));
 
         return allErrors;

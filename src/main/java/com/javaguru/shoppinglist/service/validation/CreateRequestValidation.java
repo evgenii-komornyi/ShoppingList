@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CreateRequestValidation {
-    List<ValidationErrors> allErrors = new ArrayList<>();
-
     public List<ValidationErrors> validateCreateRequest(CreateRequest createFieldRequest) {
+        List<ValidationErrors> allErrors = new ArrayList<>();
+
         allErrors.addAll(validateNameField(createFieldRequest.getProductName()));
         allErrors.addAll(validatePriceField(createFieldRequest.getProductPrice()));
         allErrors.addAll(validateCategoryField(createFieldRequest.getProductCategory()));
