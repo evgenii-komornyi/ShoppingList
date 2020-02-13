@@ -4,10 +4,12 @@ import com.javaguru.shoppinglist.domain.product.Product;
 import com.javaguru.shoppinglist.domain.product.ProductCategory;
 import com.javaguru.shoppinglist.domain.product.request.FindRequest;
 import com.javaguru.shoppinglist.domain.product.request.UpdateRequest;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.*;
 
+@Component
 public class ProductRepositoryImpl implements Repository<Product> {
     private static Long countID = 0L;
     private static Map<Long, Product> database = new HashMap<>();
