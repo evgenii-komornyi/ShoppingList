@@ -12,23 +12,22 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class ProductRepositoryImplTest {
+public class ProductInMemoryRepositoryImplTest {
     private Product milk;
     private Product meat;
     private Product bread;
     private Product cheese;
 
-    private ProductRepositoryImpl db;
+    private ProductInMemoryRepositoryImpl db;
     private FindRequest findRequest;
     private UpdateRequest updateRequest;
     @Before
     public void setUp() {
-        db = new ProductRepositoryImpl();
+        db = new ProductInMemoryRepositoryImpl();
         findRequest = new FindRequest();
         updateRequest = new UpdateRequest();
 
@@ -50,7 +49,7 @@ public class ProductRepositoryImplTest {
         db.create(milk);
 
         int expectedSizeList = 1;
-        Map<Long, Product> list = db.getAllDatabase();
+        List<Product> list = db.getAllDatabase();
 
         assertEquals(expectedSizeList, list.size());
     }
@@ -127,7 +126,7 @@ public class ProductRepositoryImplTest {
 
         db.updateByID(updateRequest);
 
-        assertEquals(expected, meat.getProductPrice());
+        assertEquals(expected, meat.getProductRegularPrice());
     }
 
     @Test

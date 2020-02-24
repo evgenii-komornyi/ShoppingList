@@ -1,0 +1,5 @@
+/home/sir.evgenius/IdeaProjects/ShoppingList/src/test/java/com/javaguru/shoppinglist/repository/ProductRepositoryImplTest.java
+/home/sir.evgenius/IdeaProjects/ShoppingList/src/test/java/com/javaguru/shoppinglist/service/ServiceTest.java
+/home/sir.evgenius/IdeaProjects/ShoppingList/src/test/java/com/javaguru/shoppinglist/service/validation/FindRequestValidationTest.java
+/home/sir.evgenius/IdeaProjects/ShoppingList/src/test/java/com/javaguru/shoppinglist/service/validation/CreateRequestValidationTest.java
+/home/sir.evgenius/IdeaProjects/ShoppingList/src/test/java/com/javaguru/shoppinglist/service/validation/UpdateRequestValidationTest.java

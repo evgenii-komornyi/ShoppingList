@@ -4,7 +4,7 @@ import com.javaguru.shoppinglist.domain.product.ProductCategory;
 import com.javaguru.shoppinglist.domain.product.request.CreateRequest;
 import com.javaguru.shoppinglist.domain.product.request.FindRequest;
 import com.javaguru.shoppinglist.domain.product.request.UpdateRequest;
-import com.javaguru.shoppinglist.repository.ProductRepositoryImpl;
+import com.javaguru.shoppinglist.repository.ProductInMemoryRepositoryImpl;
 import com.javaguru.shoppinglist.service.validation.CreateRequestValidation;
 import com.javaguru.shoppinglist.service.validation.FindRequestValidation;
 import com.javaguru.shoppinglist.service.validation.UpdateRequestValidation;
@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class ServiceTest {
-    private ProductRepositoryImpl db = new ProductRepositoryImpl();
+    private ProductInMemoryRepositoryImpl db = new ProductInMemoryRepositoryImpl();
 
     private CreateRequestValidation createRequestValidation = new CreateRequestValidation();
     private FindRequestValidation findRequestValidation = new FindRequestValidation();

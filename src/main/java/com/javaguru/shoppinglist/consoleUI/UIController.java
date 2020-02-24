@@ -6,7 +6,9 @@ import com.javaguru.shoppinglist.domain.product.request.CreateRequest;
 import com.javaguru.shoppinglist.domain.product.request.FindRequest;
 import com.javaguru.shoppinglist.domain.product.request.UpdateRequest;
 import com.javaguru.shoppinglist.domain.product.response.CreateResponse;
+import com.javaguru.shoppinglist.domain.product.response.FindResponse;
 import com.javaguru.shoppinglist.domain.product.response.UpdateResponse;
+import com.javaguru.shoppinglist.repository.DBErrors;
 import com.javaguru.shoppinglist.service.Service;
 import com.javaguru.shoppinglist.service.validation.ValidationErrors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,6 @@ import org.springframework.stereotype.Component;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -66,8 +67,7 @@ public class UIController {
                                     break;
                                 case "1":
                                 case "getall":
-                                    List<Product> list = new ArrayList<>(productService.getAllDatabase().values());
-                                    printProductsList(list);
+                                    printProductsList(productService.getAllDatabase());
                                     break;
                                 case "2":
                                 case "byid":
@@ -315,9 +315,11 @@ public class UIController {
         String productDescription = readString();
         productCreateRequest.setProductDescription(productDescription);
 
+
         CreateResponse createResponse = productService.addProduct(productCreateRequest);
-        if (createResponse.hasErrors()) {
-            printErrorsList(createResponse.getValidationErrors());
+        if (createResponse.hasValidationErrors() || createResponse.hasDBRrrors()) {
+            printValidationErrorsList(createResponse.getValidationErrors());
+            printDBErrorsList(createResponse.getDBErrors());
         } else {
             System.out.println("Product was successfuly added.");
         }
@@ -361,24 +363,26 @@ public class UIController {
         if (!productID.isEmpty()) {
             findRequest.setProductID(Long.valueOf(productID));
 
-            Product product = productService.findByID(findRequest).getFoundProduct();
+            FindResponse findResponse = productService.findByID(findRequest);
 
-            if (product != null) {
+            if (findResponse.getFoundProduct() != null) {
                 System.out.println("Product name: ");
                 String productName = readString();
-                productName = (productName.isEmpty() ? product.getProductName() : productName);
+                productName = (productName == null || productName.isEmpty() ? findResponse.getFoundProduct().getProductName() : productName);
 
                 System.out.println("Product price:");
                 BigDecimal productPrice = readBigDecimal();
-                productPrice = (productPrice == null ? product.getProductPrice() : productPrice);
+                productPrice = (productPrice == null ? findResponse.getFoundProduct().getProductRegularPrice() : productPrice);
 
                 String productCategory = readCategories();
-                productCategory = (productCategory == null ? String.valueOf(product.getProductCategory()) : productCategory);
+                productCategory = (productCategory == null ? String.valueOf(findResponse.getFoundProduct().getProductCategory()) : productCategory);
 
                 BigDecimal productDiscount = readDiscount();
+                productDiscount = (productDiscount == null ? findResponse.getFoundProduct().getProductDiscount() : productDiscount);
 
                 System.out.println("Product description: ");
                 String productDescription = readString();
+                productDescription = (productDescription == null || productDescription.isEmpty() ? findResponse.getFoundProduct().getProductDescription() : productDescription);
 
                 UpdateRequest updateRequest = new UpdateRequest();
 
@@ -391,14 +395,16 @@ public class UIController {
 
                 UpdateResponse updateResponse = productService.updateByID(updateRequest);
 
-                if (updateResponse.hasErrors()) {
-                    printErrorsList(updateResponse.getValidationErrors());
+                if (updateResponse.hasValidationErrors()) {
+                    printValidationErrorsList(updateResponse.getValidationErrors());
                 } else {
                     printProduct(updateResponse.getUpdatedProduct());
                     System.out.println("Product was successfuly updated.");
                 }
+            } else if (findResponse.hasDBRrrors()) {
+                printDBErrorsList(findResponse.getDBErrors());
             } else {
-                System.out.println("Nothing to update");
+                System.out.println("Such entry doesn't exist in database");
             }
         } else {
             System.out.println("ID can't be empty");
@@ -423,11 +429,11 @@ public class UIController {
 
     private void printProduct(Product product) {
         System.out.print("ID: " + product.getProductID() +
-                    ", Product: " + product.getProductName() +
-                    ", Regular price: " + product.getProductPrice() + "$" + ", " +
-                    "Discount: " + product.getProductDiscount() + "%, " +
-                    "Actual price: " + product.calculateActualPrice() + "$" + ", " +
-                    "Category: " + product.getProductCategory());
+                ", Product: " + product.getProductName() +
+                ", Regular price: " + product.getProductRegularPrice() + "$" + ", " +
+                "Discount: " + product.getProductDiscount() + "%, " +
+                "Actual price: " + product.calculateActualPrice() + "$" + ", " +
+                "Category: " + product.getProductCategory());
         if (product.getProductDescription() != null) {
             System.out.print(", Description: " + product.getProductDescription());
         }
@@ -435,8 +441,12 @@ public class UIController {
     }
 
     private void printProductsList(List<Product> productsList) {
-        for (Product product : productsList) {
-            printProduct(product);
+        if (productsList != null) {
+            for (Product product : productsList) {
+                printProduct(product);
+            }
+        } else {
+            System.out.println("Please, try later");
         }
     }
 
@@ -446,9 +456,19 @@ public class UIController {
         }
     }
 
-    private void printErrorsList(List<ValidationErrors> errorsList) {
-        for (ValidationErrors validationErrors : errorsList) {
-            System.out.println(validationErrors.getResponse());
+    private void printValidationErrorsList(List<ValidationErrors> errorsList) {
+        if (errorsList != null && !errorsList.isEmpty()) {
+            for (ValidationErrors validationErrors : errorsList) {
+                System.out.println(validationErrors.getResponse());
+            }
+        }
+    }
+
+    private void printDBErrorsList(List<DBErrors> errorsList) {
+        if (errorsList != null && !errorsList.isEmpty()) {
+            for (DBErrors dbErrors : errorsList) {
+                System.out.println(dbErrors.getResponse());
+            }
         }
     }
 }

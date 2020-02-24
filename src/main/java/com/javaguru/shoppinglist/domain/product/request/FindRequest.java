@@ -1,10 +1,11 @@
 package com.javaguru.shoppinglist.domain.product.request;
 
 import com.javaguru.shoppinglist.domain.product.ProductCategory;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.Objects;
-
+@Component
 public class FindRequest {
     private Long productID;
     private String productName;
