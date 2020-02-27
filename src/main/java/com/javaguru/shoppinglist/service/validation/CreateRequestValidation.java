@@ -1,11 +1,13 @@
 package com.javaguru.shoppinglist.service.validation;
 
 import com.javaguru.shoppinglist.domain.product.request.CreateRequest;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class CreateRequestValidation {
     public List<ValidationErrors> validateCreateRequest(CreateRequest createFieldRequest) {
         List<ValidationErrors> allErrors = new ArrayList<>();

@@ -9,6 +9,8 @@ import com.javaguru.shoppinglist.domain.product.response.CreateResponse;
 import com.javaguru.shoppinglist.domain.product.response.UpdateResponse;
 import com.javaguru.shoppinglist.service.Service;
 import com.javaguru.shoppinglist.service.validation.ValidationErrors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -17,11 +19,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+@Component
 public class UIController {
     private final static int MIN_VALUE = 0;
     private final static int MAX_VALUE = 8;
     private Service productService;
 
+    @Autowired
     public UIController(Service productService) {
         this.productService = productService;
     }

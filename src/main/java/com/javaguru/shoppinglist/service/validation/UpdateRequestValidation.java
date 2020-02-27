@@ -1,11 +1,13 @@
 package com.javaguru.shoppinglist.service.validation;
 
 import com.javaguru.shoppinglist.domain.product.request.UpdateRequest;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class UpdateRequestValidation {
     public List<ValidationErrors> validateUpdateRequest(UpdateRequest updateFieldRequest) {
         List<ValidationErrors> allErrors = new ArrayList<>();

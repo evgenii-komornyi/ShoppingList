@@ -10,16 +10,20 @@ import com.javaguru.shoppinglist.domain.product.response.FindResponse;
 import com.javaguru.shoppinglist.domain.product.response.UpdateResponse;
 import com.javaguru.shoppinglist.repository.ProductRepositoryImpl;
 import com.javaguru.shoppinglist.service.validation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 
+@Component
 public class Service {
     private final ProductRepositoryImpl DB;
     private final Validation validation;
 
+    @Autowired
     public Service(ProductRepositoryImpl DB, Validation validation) {
         this.DB = DB;
         this.validation = validation;

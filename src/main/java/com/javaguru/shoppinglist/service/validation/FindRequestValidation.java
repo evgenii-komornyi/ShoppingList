@@ -1,10 +1,12 @@
 package com.javaguru.shoppinglist.service.validation;
 
 import com.javaguru.shoppinglist.domain.product.request.FindRequest;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class FindRequestValidation {
     public List<ValidationErrors> validateFindRequest(FindRequest findFieldRequest) {
         List<ValidationErrors> allErrors = new ArrayList<>();
