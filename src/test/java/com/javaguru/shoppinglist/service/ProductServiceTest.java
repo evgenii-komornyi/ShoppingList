@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class ServiceTest {
+public class ProductServiceTest {
     private ProductInMemoryRepositoryImpl db = new ProductInMemoryRepositoryImpl();
 
     private CreateRequestValidation createRequestValidation = new CreateRequestValidation();
@@ -25,7 +25,7 @@ public class ServiceTest {
 
     private Validation validation = new Validation(createRequestValidation, findRequestValidation, updateRequestValidation);
 
-    private Service victim = new Service(db, validation);
+    private ProductService victim = new ProductService(db, validation);
 
     @Test
     public void shouldAddProductSuccessfuly() {

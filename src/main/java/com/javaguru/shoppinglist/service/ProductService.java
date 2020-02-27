@@ -13,23 +13,23 @@ import com.javaguru.shoppinglist.repository.Repository;
 import com.javaguru.shoppinglist.service.validation.Validation;
 import com.javaguru.shoppinglist.service.validation.ValidationErrors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class Service {
-    private final Repository<Product> DB;
+public class ProductService {
+    private final Repository<Product> repository;
     private final Validation validation;
 
     @Autowired
-    public Service(Repository<Product> DB, Validation validation) {
-        this.DB = DB;
+    public ProductService(Repository<Product> repository, Validation validation) {
+        this.repository = repository;
         this.validation = validation;
     }
 
@@ -37,42 +37,30 @@ public class Service {
         CreateResponse response = new CreateResponse();
         List<ValidationErrors> validationErrors = validation.getCreateRequestValidation().validateCreateRequest(createRequest);
         List<DBErrors> dbErrors = new ArrayList<>();
+
         if (!validationErrors.isEmpty()) {
             response.setValidationErrors(validationErrors);
         } else {
-            FindRequest findRequest = new FindRequest();
-            findRequest.setProductName(createRequest.getProductName());
-
             try {
-                if (!DB.read(findRequest).isEmpty()) {
-//                    validationErrors.add(ValidationErrors.DUPLICATE_NAME);
-//                    response.setValidationErrors(validationErrors);
+                Product product = new Product(createRequest.getProductName(),
+                        createRequest.getProductPrice(),
+                        ProductCategory.valueOf(createRequest.getProductCategory()));
+
+                if (createRequest.getProductDiscount() == null) {
+                    product.setProductDiscount(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_EVEN));
                 } else {
-                    Product product = new Product(createRequest.getProductName(),
-                            createRequest.getProductPrice(),
-                            ProductCategory.valueOf(createRequest.getProductCategory()));
-
-                    if (createRequest.getProductDiscount() == null) {
-                        product.setProductDiscount(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_EVEN));
-                    } else {
-                        product.setProductDiscount(createRequest.getProductDiscount().setScale(2, RoundingMode.HALF_EVEN));
-                    }
-
-                    product.setProductDescription(createRequest.getProductDescription());
-                    response.setProduct(DB.create(product));
-
+                    product.setProductDiscount(createRequest.getProductDiscount().setScale(2, RoundingMode.HALF_EVEN));
                 }
+
+                product.setProductDescription(createRequest.getProductDescription());
+
+                response.setProduct(repository.create(product));
             } catch (CannotGetJdbcConnectionException e) {
                 dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
-                response.setDBErrors(dbErrors);
-            } catch (Exception e) {
-                if(e instanceof SQLIntegrityConstraintViolationException) {
-                    if(e.getMessage().contains("Duplicate")) {
-                        dbErrors.add(DBErrors.DB_DUPLICATE_ENTRY);
-                        response.setDBErrors(dbErrors);
-                    }
-                }
+            } catch (DuplicateKeyException e) {
+                dbErrors.add(DBErrors.DB_DUPLICATE_ENTRY);
             }
+            response.setDBErrors(dbErrors);
         }
         return response;
     }
@@ -85,7 +73,7 @@ public class Service {
             if (!validationErrors.isEmpty()) {
                 response.setValidationErrors(validationErrors);
             } else {
-                response.setFoundProduct(DB.readByID(findRequest));
+                response.setFoundProduct(repository.readByID(findRequest));
             }
         } catch(CannotGetJdbcConnectionException e) {
             dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
@@ -103,7 +91,7 @@ public class Service {
                 response.setValidationErrors(validationErrors);
             } else {
 
-                response.setListOfFoundProducts(DB.read(findRequest));
+                response.setListOfFoundProducts(repository.read(findRequest));
             }
         } catch(CannotGetJdbcConnectionException | NullPointerException e){
             dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
@@ -116,26 +104,19 @@ public class Service {
         UpdateResponse response = new UpdateResponse();
         List<ValidationErrors> validationErrors = validation.getUpdateRequestValidation().validateUpdateRequest(updateRequest);
         List<DBErrors> dbErrors = new ArrayList<>();
-        try {
-            if (!validationErrors.isEmpty()) {
-                response.setValidationErrors(validationErrors);
-            } else {
-                FindRequest findRequest = new FindRequest();
-                findRequest.setProductName(updateRequest.getProductName());
 
-                List<Product> list = DB.read(findRequest);
-
-                if (!list.isEmpty() && !list.get(0).getProductID().equals(updateRequest.getProductID())) {
-                    validationErrors.add(ValidationErrors.DUPLICATE_NAME);
-                    response.setValidationErrors(validationErrors);
-                } else {
-                    response.setUpdatedProduct(DB.updateByID(updateRequest));
-                }
+        if (!validationErrors.isEmpty()) {
+            response.setValidationErrors(validationErrors);
+        } else {
+            try {
+                response.setUpdatedProduct(repository.updateByID(updateRequest));
+            } catch (CannotGetJdbcConnectionException e) {
+                dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
+            } catch (DuplicateKeyException e) {
+                dbErrors.add(DBErrors.DB_DUPLICATE_ENTRY);
             }
-        } catch (CannotGetJdbcConnectionException e) {
-            dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
-            response.setDBErrors(dbErrors);
         }
+        response.setDBErrors(dbErrors);
         return response;
     }
 
@@ -143,7 +124,7 @@ public class Service {
         boolean hasDeleted = false;
 
         try {
-            hasDeleted = DB.delete(findRequest);
+            hasDeleted = repository.delete(findRequest);
         } catch (CannotGetJdbcConnectionException e) {
             System.out.println("Database has failed, please try again later");
         }
@@ -153,7 +134,7 @@ public class Service {
     public List<Product> getAllDatabase() {
         List<Product> allDB = null;
         try {
-            allDB = DB.getAllDatabase();
+            allDB = repository.getAllDatabase();
         } catch (CannotGetJdbcConnectionException e) {
             System.out.println("Database has failed, please try again later");
         }
@@ -162,6 +143,6 @@ public class Service {
     }
 
     public void drop() {
-        DB.drop();
+        repository.drop();
     }
 }

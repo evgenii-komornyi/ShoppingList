@@ -9,11 +9,7 @@ import java.util.List;
 @Component
 public class FindRequestValidation {
     public List<ValidationErrors> validateFindRequest(FindRequest findFieldRequest) {
-        List<ValidationErrors> allErrors = new ArrayList<>();
-
-        allErrors.addAll(validateSearchCriteria(findFieldRequest));
-
-        return allErrors;
+        return new ArrayList<>(validateSearchCriteria(findFieldRequest));
     }
 
     private List<ValidationErrors> validateSearchCriteria(FindRequest searchCriteria) {

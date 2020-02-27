@@ -9,7 +9,7 @@ import com.javaguru.shoppinglist.domain.product.response.CreateResponse;
 import com.javaguru.shoppinglist.domain.product.response.FindResponse;
 import com.javaguru.shoppinglist.domain.product.response.UpdateResponse;
 import com.javaguru.shoppinglist.repository.DBErrors;
-import com.javaguru.shoppinglist.service.Service;
+import com.javaguru.shoppinglist.service.ProductService;
 import com.javaguru.shoppinglist.service.validation.ValidationErrors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,10 +24,10 @@ import java.util.Scanner;
 public class UIController {
     private final static int MIN_VALUE = 0;
     private final static int MAX_VALUE = 8;
-    private Service productService;
+    private ProductService productService;
 
     @Autowired
-    public UIController(Service productService) {
+    public UIController(ProductService productService) {
         this.productService = productService;
     }
 
@@ -395,8 +395,9 @@ public class UIController {
 
                 UpdateResponse updateResponse = productService.updateByID(updateRequest);
 
-                if (updateResponse.hasValidationErrors()) {
+                if (updateResponse.hasValidationErrors() || updateResponse.hasDBRrrors()) {
                     printValidationErrorsList(updateResponse.getValidationErrors());
+                    printDBErrorsList(updateResponse.getDBErrors());
                 } else {
                     printProduct(updateResponse.getUpdatedProduct());
                     System.out.println("Product was successfuly updated.");
