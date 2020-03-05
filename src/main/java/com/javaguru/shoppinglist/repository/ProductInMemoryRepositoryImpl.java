@@ -4,13 +4,15 @@ import com.javaguru.shoppinglist.domain.product.Product;
 import com.javaguru.shoppinglist.domain.product.ProductCategory;
 import com.javaguru.shoppinglist.domain.product.request.FindRequest;
 import com.javaguru.shoppinglist.domain.product.request.UpdateRequest;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.*;
 
 @Component
-public class ProductRepositoryImpl implements Repository<Product> {
+@Profile("memory")
+public class ProductInMemoryRepositoryImpl implements Repository<Product> {
     private static Long countID = 0L;
     private static Map<Long, Product> database = new HashMap<>();
 
@@ -43,12 +45,12 @@ public class ProductRepositoryImpl implements Repository<Product> {
         for (Product product : databaseForFind) {
             sProductID = ((findRequest.getProductID() != null) ? findRequest.getProductID() : product.getProductID());
             sProductName = ((findRequest.getProductName() != null) ? findRequest.getProductName() : product.getProductName());
-            sProductPrice = ((findRequest.getProductPrice() != null) ? findRequest.getProductPrice() : product.getProductPrice());
+            sProductPrice = ((findRequest.getProductPrice() != null) ? findRequest.getProductPrice() : product.getProductRegularPrice());
             sProductCategory = ((findRequest.getProductCategory() != null) ? String.valueOf(findRequest.getProductCategory()) : String.valueOf(product.getProductCategory()));
 
             if (sProductID.compareTo(product.getProductID()) == 0
                     && sProductName.equalsIgnoreCase(product.getProductName())
-                    && sProductPrice.compareTo(product.getProductPrice()) == 0
+                    && sProductPrice.compareTo(product.getProductRegularPrice()) == 0
                     && sProductCategory.equalsIgnoreCase(String.valueOf(product.getProductCategory()))) {
                 foundItems.add(product);
             }
@@ -73,7 +75,7 @@ public class ProductRepositoryImpl implements Repository<Product> {
             product = database.get(updateRequest.getProductID());
 
             product.setProductName(updateRequest.getProductName());
-            product.setProductPrice(updateRequest.getProductPrice());
+            product.setProductRegularPrice(updateRequest.getProductPrice());
             product.setProductCategory(ProductCategory.valueOf(updateRequest.getProductCategory()));
             product.setProductDiscount(updateRequest.getProductDiscount());
             product.setProductDescription(updateRequest.getProductDescription());
@@ -91,8 +93,8 @@ public class ProductRepositoryImpl implements Repository<Product> {
         }
     }
 
-    public Map<Long, Product> getAllDatabase() {
-        return database;
+    public List<Product> findAll() {
+        return new ArrayList<>(database.values());
     }
 
     public void drop() {

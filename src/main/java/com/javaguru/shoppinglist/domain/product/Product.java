@@ -7,20 +7,22 @@ import java.util.Objects;
 public class Product {
     private Long productID;
     private String productName;
-    private BigDecimal productPrice;
+    private BigDecimal productRegularPrice;
     private ProductCategory productCategory;
     private BigDecimal productDiscount;
     private String productDescription;
 
-    public Product(String productName, BigDecimal productPrice, ProductCategory productCategory) {
+    public Product(){}
+
+    public Product(String productName, BigDecimal productRegularPrice, ProductCategory productCategory) {
         this.productName = productName;
-        this.productPrice = productPrice;
+        this.productRegularPrice = productRegularPrice;
         this.productCategory = productCategory;
     }
 
     public BigDecimal calculateActualPrice() {
-        BigDecimal productActualPrice = productPrice.subtract((productPrice.multiply(productDiscount)).divide(BigDecimal.valueOf(100)));
-            return productActualPrice.setScale(2, RoundingMode.HALF_EVEN);
+        BigDecimal productActualPrice = productRegularPrice.subtract((productRegularPrice.multiply(productDiscount)).divide(BigDecimal.valueOf(100)));
+        return productActualPrice.setScale(2, RoundingMode.HALF_EVEN);
     }
 
     @Override
@@ -28,7 +30,7 @@ public class Product {
         return "Product{" +
                 "productID=" + productID +
                 ", productName='" + productName + '\'' +
-                ", productPrice=" + productPrice +
+                ", productRegularPrice=" + productRegularPrice +
                 ", productActualPrice=" + calculateActualPrice() +
                 ", productCategory=" + productCategory +
                 ", productDiscount=" + productDiscount.setScale(2, RoundingMode.HALF_EVEN) +
@@ -43,7 +45,7 @@ public class Product {
         Product product = (Product) o;
         return Objects.equals(productID, product.productID) &&
                 Objects.equals(productName, product.productName) &&
-                Objects.equals(productPrice, product.productPrice) &&
+                Objects.equals(productRegularPrice, product.productRegularPrice) &&
                 productCategory == product.productCategory &&
                 Objects.equals(productDiscount, product.productDiscount) &&
                 Objects.equals(productDescription, product.productDescription);
@@ -51,7 +53,7 @@ public class Product {
 
     @Override
     public int hashCode() {
-        return Objects.hash(productID, productName, productPrice, productCategory, productDiscount, productDescription);
+        return Objects.hash(productID, productName, productRegularPrice, productCategory, productDiscount, productDescription);
     }
 
     public Long getProductID() {
@@ -70,12 +72,12 @@ public class Product {
         this.productName = productName;
     }
 
-    public BigDecimal getProductPrice() {
-        return productPrice;
+    public BigDecimal getProductRegularPrice() {
+        return productRegularPrice;
     }
 
-    public void setProductPrice(BigDecimal productPrice) {
-        this.productPrice = productPrice;
+    public void setProductRegularPrice(BigDecimal productRegularPrice) {
+        this.productRegularPrice = productRegularPrice;
     }
 
     public ProductCategory getProductCategory() {

@@ -4,7 +4,7 @@ import com.javaguru.shoppinglist.domain.product.ProductCategory;
 import com.javaguru.shoppinglist.domain.product.request.CreateRequest;
 import com.javaguru.shoppinglist.domain.product.request.FindRequest;
 import com.javaguru.shoppinglist.domain.product.request.UpdateRequest;
-import com.javaguru.shoppinglist.repository.ProductRepositoryImpl;
+import com.javaguru.shoppinglist.repository.ProductInMemoryRepositoryImpl;
 import com.javaguru.shoppinglist.service.validation.CreateRequestValidation;
 import com.javaguru.shoppinglist.service.validation.FindRequestValidation;
 import com.javaguru.shoppinglist.service.validation.UpdateRequestValidation;
@@ -16,8 +16,8 @@ import java.math.BigDecimal;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class ServiceTest {
-    private ProductRepositoryImpl db = new ProductRepositoryImpl();
+public class ProductServiceTest {
+    private ProductInMemoryRepositoryImpl db = new ProductInMemoryRepositoryImpl();
 
     private CreateRequestValidation createRequestValidation = new CreateRequestValidation();
     private FindRequestValidation findRequestValidation = new FindRequestValidation();
@@ -25,7 +25,7 @@ public class ServiceTest {
 
     private Validation validation = new Validation(createRequestValidation, findRequestValidation, updateRequestValidation);
 
-    private Service victim = new Service(db, validation);
+    private ProductService victim = new ProductService(db, validation);
 
     @Test
     public void shouldAddProductSuccessfuly() {
@@ -36,8 +36,6 @@ public class ServiceTest {
         findRequest.setProductID(id);
 
         assertEquals(expectedProductName, victim.findByID(findRequest).getFoundProduct().getProductName());
-
-        victim.drop();
     }
 
     private CreateRequest createRequest() {
@@ -57,8 +55,6 @@ public class ServiceTest {
         findRequest.setProductID(expectedID);
 
         assertEquals(expectedID, victim.findByID(findRequest).getFoundProduct().getProductID());
-
-        victim.drop();
     }
 
     private CreateRequest createRequestForFindByID() {
@@ -80,8 +76,6 @@ public class ServiceTest {
 
         int expectedSize = 2;
         assertEquals(expectedSize, victim.findByCategory(findRequest).getListOfFoundProducts().size());
-
-        victim.drop();
     }
 
     private CreateRequest milkForFindByCategory() {
@@ -116,9 +110,6 @@ public class ServiceTest {
         BigDecimal expectedDiscount = new BigDecimal("50");
 
         assertEquals(expectedDiscount, victim.updateByID(updateRequest).getUpdatedProduct().getProductDiscount());
-
-        victim.drop();
-
     }
 
     private CreateRequest milkForUpdateByCategory() {
@@ -138,8 +129,6 @@ public class ServiceTest {
         findRequest.setProductID(id);
 
         assertTrue(victim.deleteByID(findRequest));
-
-        victim.drop();
     }
 
     @Test
@@ -150,7 +139,5 @@ public class ServiceTest {
         int expectedSizeOfDB = 2;
 
         assertEquals(expectedSizeOfDB, victim.getAllDatabase().size());
-
-        victim.drop();
     }
 }
