@@ -115,14 +115,9 @@ public class ProductDALImpl implements Repository<Product> {
     }
 
     @Override
-    public List<Product> getAllDatabase() {
+    public List<Product> findAll() {
         String query = "select * from products";
 
         return jdbcTemplate.query(query, new ProductMapper());
-    }
-
-    @Override
-    public void drop() {
-
     }
 }

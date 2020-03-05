@@ -134,7 +134,7 @@ public class ProductService {
     public List<Product> getAllDatabase() {
         List<Product> allDB = null;
         try {
-            allDB = repository.getAllDatabase();
+            allDB = repository.findAll();
         } catch (CannotGetJdbcConnectionException e) {
             System.out.println("Database has failed, please try again later");
         }

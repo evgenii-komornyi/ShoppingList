@@ -12,6 +12,5 @@ public interface Repository<T> {
     Product readByID(FindRequest findRequest);
     T updateByID(UpdateRequest updateRequest);
     boolean delete(FindRequest itemID);
-    List<Product> getAllDatabase();
-    void drop();
+    List<Product> findAll();
 }

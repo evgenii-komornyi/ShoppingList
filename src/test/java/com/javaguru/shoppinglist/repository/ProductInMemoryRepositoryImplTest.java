@@ -49,7 +49,7 @@ public class ProductInMemoryRepositoryImplTest {
         db.create(milk);
 
         int expectedSizeList = 1;
-        List<Product> list = db.getAllDatabase();
+        List<Product> list = db.findAll();
 
         assertEquals(expectedSizeList, list.size());
     }
@@ -62,7 +62,7 @@ public class ProductInMemoryRepositoryImplTest {
 
         int expectedSize = 3;
 
-        assertEquals(expectedSize, db.getAllDatabase().size());
+        assertEquals(expectedSize, db.findAll().size());
     }
 
     @Test

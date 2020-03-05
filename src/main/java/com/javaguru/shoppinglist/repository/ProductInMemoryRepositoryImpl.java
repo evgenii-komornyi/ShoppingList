@@ -93,7 +93,7 @@ public class ProductInMemoryRepositoryImpl implements Repository<Product> {
         }
     }
 
-    public List<Product> getAllDatabase() {
+    public List<Product> findAll() {
         return new ArrayList<>(database.values());
     }
 
