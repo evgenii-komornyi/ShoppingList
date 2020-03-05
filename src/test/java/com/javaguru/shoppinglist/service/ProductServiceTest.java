@@ -36,8 +36,6 @@ public class ProductServiceTest {
         findRequest.setProductID(id);
 
         assertEquals(expectedProductName, victim.findByID(findRequest).getFoundProduct().getProductName());
-
-        victim.drop();
     }
 
     private CreateRequest createRequest() {
@@ -57,8 +55,6 @@ public class ProductServiceTest {
         findRequest.setProductID(expectedID);
 
         assertEquals(expectedID, victim.findByID(findRequest).getFoundProduct().getProductID());
-
-        victim.drop();
     }
 
     private CreateRequest createRequestForFindByID() {
@@ -80,8 +76,6 @@ public class ProductServiceTest {
 
         int expectedSize = 2;
         assertEquals(expectedSize, victim.findByCategory(findRequest).getListOfFoundProducts().size());
-
-        victim.drop();
     }
 
     private CreateRequest milkForFindByCategory() {
@@ -116,9 +110,6 @@ public class ProductServiceTest {
         BigDecimal expectedDiscount = new BigDecimal("50");
 
         assertEquals(expectedDiscount, victim.updateByID(updateRequest).getUpdatedProduct().getProductDiscount());
-
-        victim.drop();
-
     }
 
     private CreateRequest milkForUpdateByCategory() {
@@ -138,8 +129,6 @@ public class ProductServiceTest {
         findRequest.setProductID(id);
 
         assertTrue(victim.deleteByID(findRequest));
-
-        victim.drop();
     }
 
     @Test
@@ -150,7 +139,5 @@ public class ProductServiceTest {
         int expectedSizeOfDB = 2;
 
         assertEquals(expectedSizeOfDB, victim.getAllDatabase().size());
-
-        victim.drop();
     }
 }

@@ -141,8 +141,4 @@ public class ProductService {
 
         return allDB;
     }
-
-    public void drop() {
-        repository.drop();
-    }
 }
