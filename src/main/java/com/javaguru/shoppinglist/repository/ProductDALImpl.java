@@ -19,7 +19,7 @@ import java.util.List;
 
 @Component
 @Profile("jdbc")
-public class ProductDALImpl implements Repository<Product> {
+public class ProductDALImpl implements ProductRepository<Product> {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -56,7 +56,7 @@ public class ProductDALImpl implements Repository<Product> {
             query = query + "productId=" + findRequest.getProductID();
         }
 
-        if (findRequest.getProductName() !=null && !findRequest.getProductName().isEmpty()) {
+        if (findRequest.getProductName() != null && !findRequest.getProductName().isEmpty()) {
             query = query + "productName=\"" + findRequest.getProductName() + "\"";
         }
 
