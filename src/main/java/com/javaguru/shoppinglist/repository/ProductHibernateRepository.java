@@ -63,7 +63,10 @@ class ProductHibernateRepository implements ProductRepository<Product> {
     public Product updateByID(UpdateRequest updateRequest) {
         Session session = sessionFactory.getCurrentSession();
         Query query = session.createQuery(
-                "update Product set productName=:productName, productRegularPrice=:productRegularPrice, productCategory=:productCategory, productDiscount=:productDiscount, productDescription=:productDescription where productId=" + updateRequest.getProductID()
+                "update Product set productName=:productName, productRegularPrice=:productRegularPrice, " +
+                        "productCategory=:productCategory, productDiscount=:productDiscount, " +
+                        "productDescription=:productDescription " +
+                        "where productId=" + updateRequest.getProductID()
                 );
 
         query.setString("productName", updateRequest.getProductName());
