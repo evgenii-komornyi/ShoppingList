@@ -12,7 +12,7 @@ import java.util.*;
 
 @Component
 @Profile("memory")
-public class ProductInMemoryRepositoryImpl implements Repository<Product> {
+public class ProductInMemoryProductRepositoryImpl implements ProductRepository<Product> {
     private static Long countID = 0L;
     private static Map<Long, Product> database = new HashMap<>();
 

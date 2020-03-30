@@ -4,7 +4,7 @@ import com.javaguru.shoppinglist.domain.product.ProductCategory;
 import com.javaguru.shoppinglist.domain.product.request.CreateRequest;
 import com.javaguru.shoppinglist.domain.product.request.FindRequest;
 import com.javaguru.shoppinglist.domain.product.request.UpdateRequest;
-import com.javaguru.shoppinglist.repository.ProductInMemoryRepositoryImpl;
+import com.javaguru.shoppinglist.repository.ProductInMemoryProductRepositoryImpl;
 import com.javaguru.shoppinglist.service.validation.CreateRequestValidation;
 import com.javaguru.shoppinglist.service.validation.FindRequestValidation;
 import com.javaguru.shoppinglist.service.validation.UpdateRequestValidation;
@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class ProductServiceTest {
-    private ProductInMemoryRepositoryImpl db = new ProductInMemoryRepositoryImpl();
+    private ProductInMemoryProductRepositoryImpl db = new ProductInMemoryProductRepositoryImpl();
 
     private CreateRequestValidation createRequestValidation = new CreateRequestValidation();
     private FindRequestValidation findRequestValidation = new FindRequestValidation();
@@ -74,7 +74,7 @@ public class ProductServiceTest {
         FindRequest findRequest = new FindRequest();
         findRequest.setProductCategory(ProductCategory.MILK);
 
-        int expectedSize = 2;
+        int expectedSize = 4;
         assertEquals(expectedSize, victim.findByCategory(findRequest).getListOfFoundProducts().size());
     }
 
@@ -136,7 +136,7 @@ public class ProductServiceTest {
         victim.addProduct(milkForUpdateByCategory());
         victim.addProduct(pienaForFindByCategory());
 
-        int expectedSizeOfDB = 2;
+        int expectedSizeOfDB = 7;
 
         assertEquals(expectedSizeOfDB, victim.getAllDatabase().size());
     }

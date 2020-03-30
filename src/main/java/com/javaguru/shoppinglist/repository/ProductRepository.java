@@ -6,7 +6,7 @@ import com.javaguru.shoppinglist.domain.product.request.UpdateRequest;
 
 import java.util.List;
 
-public interface Repository<T> {
+public interface ProductRepository<T> {
     T create(T item);
     List<T> read(FindRequest findRequest);
     Product readByID(FindRequest findRequest);

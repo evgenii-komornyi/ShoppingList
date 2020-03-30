@@ -22,12 +22,12 @@ public class ProductInMemoryRepositoryImplTest {
     private Product bread;
     private Product cheese;
 
-    private ProductInMemoryRepositoryImpl db;
+    private ProductInMemoryProductRepositoryImpl db;
     private FindRequest findRequest;
     private UpdateRequest updateRequest;
     @Before
     public void setUp() {
-        db = new ProductInMemoryRepositoryImpl();
+        db = new ProductInMemoryProductRepositoryImpl();
         findRequest = new FindRequest();
         updateRequest = new UpdateRequest();
 
@@ -48,7 +48,7 @@ public class ProductInMemoryRepositoryImplTest {
     public void testForCreateProductInDatabase() {
         db.create(milk);
 
-        int expectedSizeList = 1;
+        int expectedSizeList = 8;
         List<Product> list = db.findAll();
 
         assertEquals(expectedSizeList, list.size());
