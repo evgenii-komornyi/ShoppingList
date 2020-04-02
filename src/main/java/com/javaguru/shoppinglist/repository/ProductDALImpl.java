@@ -1,8 +1,8 @@
 package com.javaguru.shoppinglist.repository;
 
 import com.javaguru.shoppinglist.domain.product.Product;
-import com.javaguru.shoppinglist.domain.product.request.FindRequest;
-import com.javaguru.shoppinglist.domain.product.request.UpdateRequest;
+import com.javaguru.shoppinglist.domain.product.request.ProductFindRequest;
+import com.javaguru.shoppinglist.domain.product.request.ProductUpdateRequest;
 import com.javaguru.shoppinglist.domain.product.response.ProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -37,7 +37,7 @@ public class ProductDALImpl implements ProductRepository<Product> {
                     .prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, item.getProductName());
             ps.setString(2, String.valueOf(item.getProductRegularPrice()));
-            ps.setString(3, String.valueOf(item.getProductCategory()));
+            ps.setString(3, String.valueOf(item.getCategory()));
             ps.setString(4, String.valueOf(item.getProductDiscount()));
             ps.setString(5, item.getProductDescription());
 
@@ -49,19 +49,19 @@ public class ProductDALImpl implements ProductRepository<Product> {
     }
 
     @Override
-    public List<Product> read(FindRequest findRequest) {
+    public List<Product> read(ProductFindRequest productFindRequest) {
         String query = "select * from products where ";
 
-        if (findRequest.getProductID() != null) {
-            query = query + "productId=" + findRequest.getProductID();
+        if (productFindRequest.getProductID() != null) {
+            query = query + "productId=" + productFindRequest.getProductID();
         }
 
-        if (findRequest.getProductName() != null && !findRequest.getProductName().isEmpty()) {
-            query = query + "productName=\"" + findRequest.getProductName() + "\"";
+        if (productFindRequest.getProductName() != null && !productFindRequest.getProductName().isEmpty()) {
+            query = query + "productName=\"" + productFindRequest.getProductName() + "\"";
         }
 
-        if (findRequest.getProductCategory() != null) {
-            query = query + "productCategory=\"" + findRequest.getProductCategory() + "\"";
+        if (productFindRequest.getProductCategory() != null) {
+            query = query + "productCategory=\"" + productFindRequest.getProductCategory() + "\"";
         }
 
         List<Product> products = jdbcTemplate.query(query, new BeanPropertyRowMapper<>(Product.class));
@@ -70,8 +70,8 @@ public class ProductDALImpl implements ProductRepository<Product> {
     }
 
     @Override
-    public Product readByID(FindRequest findRequest) {
-        List<Product> products = read(findRequest);
+    public Product readByID(ProductFindRequest productFindRequest) {
+        List<Product> products = read(productFindRequest);
         if (!products.isEmpty()) {
             return products.get(0);
         }
@@ -79,7 +79,7 @@ public class ProductDALImpl implements ProductRepository<Product> {
     }
 
     @Override
-    public Product updateByID(UpdateRequest updateRequest) throws CannotGetJdbcConnectionException {
+    public Product updateByID(ProductUpdateRequest updateRequest) throws CannotGetJdbcConnectionException {
         String query = "update products set productName=?, productRegularPrice=?, productCategory=?, productDiscount=?, productDescription=? where productId=" + updateRequest.getProductID();
 
         jdbcTemplate.update(connection -> {
@@ -94,14 +94,14 @@ public class ProductDALImpl implements ProductRepository<Product> {
             return ps;
         });
 
-        FindRequest findRequest = new FindRequest();
-        findRequest.setProductID(updateRequest.getProductID());
+        ProductFindRequest productFindRequest = new ProductFindRequest();
+        productFindRequest.setProductID(updateRequest.getProductID());
 
-        return readByID(findRequest);
+        return readByID(productFindRequest);
     }
 
     @Override
-    public boolean delete(FindRequest itemID) {
+    public boolean delete(ProductFindRequest itemID) {
         String query = "delete from products where productId=?";
         int countOfDeletedItem =  jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(query);

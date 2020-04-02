@@ -2,8 +2,8 @@ package com.javaguru.shoppinglist.repository;
 
 import com.javaguru.shoppinglist.domain.product.Product;
 import com.javaguru.shoppinglist.domain.product.ProductCategory;
-import com.javaguru.shoppinglist.domain.product.request.FindRequest;
-import com.javaguru.shoppinglist.domain.product.request.UpdateRequest;
+import com.javaguru.shoppinglist.domain.product.request.ProductFindRequest;
+import com.javaguru.shoppinglist.domain.product.request.ProductUpdateRequest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,14 +22,14 @@ public class ProductInMemoryRepositoryImplTest {
     private Product bread;
     private Product cheese;
 
-    private ProductInMemoryProductRepositoryImpl db;
-    private FindRequest findRequest;
-    private UpdateRequest updateRequest;
+    private ProductInMemoryRepositoryImpl db;
+    private ProductFindRequest productFindRequest;
+    private ProductUpdateRequest updateRequest;
     @Before
     public void setUp() {
-        db = new ProductInMemoryProductRepositoryImpl();
-        findRequest = new FindRequest();
-        updateRequest = new UpdateRequest();
+        db = new ProductInMemoryRepositoryImpl();
+        productFindRequest = new ProductFindRequest();
+        updateRequest = new ProductUpdateRequest();
 
         milk = new Product("Milk", new BigDecimal("25"), ProductCategory.MILK);
         milk.setProductDiscount(new BigDecimal("45.3"));
@@ -48,7 +48,7 @@ public class ProductInMemoryRepositoryImplTest {
     public void testForCreateProductInDatabase() {
         db.create(milk);
 
-        int expectedSizeList = 8;
+        int expectedSizeList = 1;
         List<Product> list = db.findAll();
 
         assertEquals(expectedSizeList, list.size());
@@ -72,9 +72,9 @@ public class ProductInMemoryRepositoryImplTest {
 
         Long id = milk.getProductID();
 
-        findRequest.setProductID(id);
+        productFindRequest.setProductID(id);
 
-        assertEquals(Collections.singletonList(milk), db.read(findRequest));
+        assertEquals(Collections.singletonList(milk), db.read(productFindRequest));
     }
 
     @Test
@@ -82,9 +82,9 @@ public class ProductInMemoryRepositoryImplTest {
         db.create(milk);
         db.create(meat);
 
-        findRequest.setProductName("Milk");
+        productFindRequest.setProductName("Milk");
 
-        assertEquals(Collections.singletonList(milk), db.read(findRequest));
+        assertEquals(Collections.singletonList(milk), db.read(productFindRequest));
     }
 
     @Test
@@ -93,13 +93,13 @@ public class ProductInMemoryRepositoryImplTest {
         db.create(meat);
         db.create(cheese);
 
-        findRequest.setProductCategory(ProductCategory.MILK);
+        productFindRequest.setProductCategory(ProductCategory.MILK);
 
         List<Product> expected = new ArrayList<>();
         expected.add(milk);
         expected.add(cheese);
 
-        assertEquals(expected, db.read(findRequest));
+        assertEquals(expected, db.read(productFindRequest));
     }
 
     @Test
@@ -110,7 +110,7 @@ public class ProductInMemoryRepositoryImplTest {
 
         Long id = meat.getProductID();
         String name = meat.getProductName();
-        ProductCategory category = meat.getProductCategory();
+        ProductCategory category = meat.getCategory();
         BigDecimal discount = meat.getProductDiscount();
         String description = meat.getProductDescription();
 
@@ -138,8 +138,8 @@ public class ProductInMemoryRepositoryImplTest {
 
         Long id = meat.getProductID();
 
-        findRequest.setProductID(id);
+        productFindRequest.setProductID(id);
 
-        assertTrue(db.delete(findRequest));
+        assertTrue(db.delete(productFindRequest));
     }
 }

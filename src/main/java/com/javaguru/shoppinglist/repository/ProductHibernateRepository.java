@@ -1,8 +1,8 @@
 package com.javaguru.shoppinglist.repository;
 
 import com.javaguru.shoppinglist.domain.product.Product;
-import com.javaguru.shoppinglist.domain.product.request.FindRequest;
-import com.javaguru.shoppinglist.domain.product.request.UpdateRequest;
+import com.javaguru.shoppinglist.domain.product.request.ProductFindRequest;
+import com.javaguru.shoppinglist.domain.product.request.ProductUpdateRequest;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -27,40 +28,39 @@ class ProductHibernateRepository implements ProductRepository<Product> {
 
     @Override
     public Product create(Product item) {
-        sessionFactory.getCurrentSession().save(item);
-        return item;
+        return (Product) sessionFactory.getCurrentSession().save(item);
     }
 
     @Override
-    public List<Product> read(FindRequest findRequest) {
+    public List<Product> read(ProductFindRequest productFindRequest) {
         Session session = sessionFactory.getCurrentSession();
-        List<Product> products = null;
+        List<Product> products = new ArrayList<>();
 
-        if (findRequest.getProductID() != null) {
-            products = session.createCriteria(Product.class).add(Restrictions.eq("id", findRequest.getProductID())).list();
+        if (productFindRequest.getProductID() != null) {
+            products = session.createCriteria(Product.class).add(Restrictions.eq("id", productFindRequest.getProductID())).list();
         }
 
-        if (findRequest.getProductName() != null && !findRequest.getProductName().isEmpty()) {
-            products = session.createCriteria(Product.class).add(Restrictions.eq("productName", findRequest.getProductName())).list();
+        if (productFindRequest.getProductName() != null && !productFindRequest.getProductName().isEmpty()) {
+            products = session.createCriteria(Product.class).add(Restrictions.eq("productName", productFindRequest.getProductName())).list();
         }
 
-        if (findRequest.getProductCategory() != null) {
-            products = session.createCriteria(Product.class).add(Restrictions.eq("productCategory", findRequest.getProductCategory())).list();
+        if (productFindRequest.getProductCategory() != null) {
+            products = session.createCriteria(Product.class).add(Restrictions.eq("category", productFindRequest.getProductCategory())).list();
         }
 
         return products;
     }
 
     @Override
-    public Product readByID(FindRequest findRequest) {
+    public Product readByID(ProductFindRequest productFindRequest) {
         Product product = (Product) sessionFactory.getCurrentSession().createCriteria(Product.class)
-                .add(Restrictions.eq("id", findRequest.getProductID()))
+                .add(Restrictions.eq("id", productFindRequest.getProductID()))
                 .uniqueResult();
         return product;
     }
 
     @Override
-    public Product updateByID(UpdateRequest updateRequest) {
+    public Product updateByID(ProductUpdateRequest updateRequest) {
         Session session = sessionFactory.getCurrentSession();
         Query query = session.createQuery(
                 "update Product set productName=:productName, productRegularPrice=:productRegularPrice, " +
@@ -77,19 +77,16 @@ class ProductHibernateRepository implements ProductRepository<Product> {
 
         query.executeUpdate();
 
-        FindRequest findRequest = new FindRequest();
-        findRequest.setProductID(updateRequest.getProductID());
+        ProductFindRequest productFindRequest = new ProductFindRequest();
+        productFindRequest.setProductID(updateRequest.getProductID());
 
-        return readByID(findRequest);
+        return readByID(productFindRequest);
     }
 
     @Override
-    public boolean delete(FindRequest itemID) {
-        Session session;
-        Product product;
-
-        session = sessionFactory.getCurrentSession();
-        product = (Product) session.load(Product.class, itemID.getProductID());
+    public boolean delete(ProductFindRequest itemID) {
+        Session session = sessionFactory.getCurrentSession();
+        Product product = (Product) session.load(Product.class, itemID.getProductID());
 
         if (product != null) {
             session.delete(product);

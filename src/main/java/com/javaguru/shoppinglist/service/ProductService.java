@@ -2,21 +2,21 @@ package com.javaguru.shoppinglist.service;
 
 import com.javaguru.shoppinglist.domain.product.Product;
 import com.javaguru.shoppinglist.domain.product.ProductCategory;
-import com.javaguru.shoppinglist.domain.product.request.CreateRequest;
-import com.javaguru.shoppinglist.domain.product.request.FindRequest;
-import com.javaguru.shoppinglist.domain.product.request.UpdateRequest;
-import com.javaguru.shoppinglist.domain.product.response.CreateResponse;
-import com.javaguru.shoppinglist.domain.product.response.FindResponse;
-import com.javaguru.shoppinglist.domain.product.response.UpdateResponse;
+import com.javaguru.shoppinglist.domain.product.request.ProductCreateRequest;
+import com.javaguru.shoppinglist.domain.product.request.ProductFindRequest;
+import com.javaguru.shoppinglist.domain.product.request.ProductUpdateRequest;
+import com.javaguru.shoppinglist.domain.product.response.ProductCreateResponse;
+import com.javaguru.shoppinglist.domain.product.response.ProductFindResponse;
+import com.javaguru.shoppinglist.domain.product.response.ProductUpdateResponse;
 import com.javaguru.shoppinglist.repository.DBErrors;
 import com.javaguru.shoppinglist.repository.ProductRepository;
-import com.javaguru.shoppinglist.service.validation.Validation;
-import com.javaguru.shoppinglist.service.validation.ValidationErrors;
+import com.javaguru.shoppinglist.service.validationProduct.ProductValidation;
+import com.javaguru.shoppinglist.service.validationProduct.ProductValidationErrors;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -26,40 +26,39 @@ import java.util.List;
 @Component
 public class ProductService {
     private final ProductRepository<Product> productRepository;
-    private final Validation validation;
+    private final ProductValidation productValidation;
 
     @Autowired
-    public ProductService(ProductRepository<Product> productRepository, Validation validation) {
+    public ProductService(ProductRepository<Product> productRepository, ProductValidation productValidation) {
         this.productRepository = productRepository;
-        this.validation = validation;
+        this.productValidation = productValidation;
     }
 
-    @Transactional
-    public CreateResponse addProduct(CreateRequest createRequest) {
-        CreateResponse response = new CreateResponse();
-        List<ValidationErrors> validationErrors = validation.getCreateRequestValidation().validateCreateRequest(createRequest);
+    public ProductCreateResponse addProduct(ProductCreateRequest productCreateRequest) {
+        ProductCreateResponse response = new ProductCreateResponse();
+        List<ProductValidationErrors> productValidationErrors = productValidation.getCreateRequestValidation().validateCreateRequest(productCreateRequest);
         List<DBErrors> dbErrors = new ArrayList<>();
 
-        if (!validationErrors.isEmpty()) {
-            response.setValidationErrors(validationErrors);
+        if (!productValidationErrors.isEmpty()) {
+            response.setValidationErrors(productValidationErrors);
         } else {
             try {
-                Product product = new Product(createRequest.getProductName(),
-                        createRequest.getProductPrice(),
-                        ProductCategory.valueOf(createRequest.getProductCategory()));
+                Product product = new Product(productCreateRequest.getProductName(),
+                        productCreateRequest.getProductPrice(),
+                        ProductCategory.valueOf(productCreateRequest.getProductCategory()));
 
-                if (createRequest.getProductDiscount() == null) {
+                if (productCreateRequest.getProductDiscount() == null) {
                     product.setProductDiscount(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_EVEN));
                 } else {
-                    product.setProductDiscount(createRequest.getProductDiscount().setScale(2, RoundingMode.HALF_EVEN));
+                    product.setProductDiscount(productCreateRequest.getProductDiscount().setScale(2, RoundingMode.HALF_EVEN));
                 }
 
-                product.setProductDescription(createRequest.getProductDescription());
+                product.setProductDescription(productCreateRequest.getProductDescription());
 
                 response.setProduct(productRepository.create(product));
             } catch (CannotGetJdbcConnectionException e) {
                 dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
-            } catch (DuplicateKeyException e) {
+            } catch (DuplicateKeyException | ConstraintViolationException e) {
                 dbErrors.add(DBErrors.DB_DUPLICATE_ENTRY);
             }
             response.setDBErrors(dbErrors);
@@ -67,15 +66,15 @@ public class ProductService {
         return response;
     }
 
-    public FindResponse findByID(FindRequest findRequest) {
-        FindResponse response = new FindResponse();
-        List<ValidationErrors> validationErrors = validation.getFindRequestValidation().validateFindRequest(findRequest);
+    public ProductFindResponse findByID(ProductFindRequest productFindRequest) {
+        ProductFindResponse response = new ProductFindResponse();
+        List<ProductValidationErrors> productValidationErrors = productValidation.getFindRequestValidation().validateFindRequest(productFindRequest);
         List<DBErrors> dbErrors = new ArrayList<>();
         try {
-            if (!validationErrors.isEmpty()) {
-                response.setValidationErrors(validationErrors);
+            if (!productValidationErrors.isEmpty()) {
+                response.setValidationErrors(productValidationErrors);
             } else {
-                response.setFoundProduct(productRepository.readByID(findRequest));
+                response.setFoundProduct(productRepository.readByID(productFindRequest));
             }
         } catch(CannotGetJdbcConnectionException e) {
             dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
@@ -84,16 +83,16 @@ public class ProductService {
         return response;
     }
 
-    public FindResponse findByCategory(FindRequest findRequest) {
-        FindResponse response = new FindResponse();
-        List<ValidationErrors> validationErrors = validation.getFindRequestValidation().validateFindRequest(findRequest);
+    public ProductFindResponse findByCategory(ProductFindRequest productFindRequest) {
+        ProductFindResponse response = new ProductFindResponse();
+        List<ProductValidationErrors> productValidationErrors = productValidation.getFindRequestValidation().validateFindRequest(productFindRequest);
         List<DBErrors> dbErrors = new ArrayList<>();
         try {
-            if (!validationErrors.isEmpty()) {
-                response.setValidationErrors(validationErrors);
+            if (!productValidationErrors.isEmpty()) {
+                response.setValidationErrors(productValidationErrors);
             } else {
 
-                response.setListOfFoundProducts(productRepository.read(findRequest));
+                response.setListOfFoundProducts(productRepository.read(productFindRequest));
             }
         } catch(CannotGetJdbcConnectionException | NullPointerException e){
             dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
@@ -102,14 +101,13 @@ public class ProductService {
         return response;
     }
 
-    @Transactional
-    public UpdateResponse updateByID(UpdateRequest updateRequest) {
-        UpdateResponse response = new UpdateResponse();
-        List<ValidationErrors> validationErrors = validation.getUpdateRequestValidation().validateUpdateRequest(updateRequest);
+    public ProductUpdateResponse updateByID(ProductUpdateRequest updateRequest) {
+        ProductUpdateResponse response = new ProductUpdateResponse();
+        List<ProductValidationErrors> productValidationErrors = productValidation.getUpdateRequestValidation().validateUpdateRequest(updateRequest);
         List<DBErrors> dbErrors = new ArrayList<>();
 
-        if (!validationErrors.isEmpty()) {
-            response.setValidationErrors(validationErrors);
+        if (!productValidationErrors.isEmpty()) {
+            response.setValidationErrors(productValidationErrors);
         } else {
             try {
                 response.setUpdatedProduct(productRepository.updateByID(updateRequest));
@@ -123,11 +121,11 @@ public class ProductService {
         return response;
     }
 
-    public boolean deleteByID(FindRequest findRequest) {
+    public boolean deleteByID(ProductFindRequest productFindRequest) {
         boolean hasDeleted = false;
 
         try {
-            hasDeleted = productRepository.delete(findRequest);
+            hasDeleted = productRepository.delete(productFindRequest);
         } catch (CannotGetJdbcConnectionException e) {
             System.out.println("Database has failed, please try again later");
         }

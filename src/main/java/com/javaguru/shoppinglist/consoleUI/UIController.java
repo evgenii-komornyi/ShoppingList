@@ -2,15 +2,15 @@ package com.javaguru.shoppinglist.consoleUI;
 
 import com.javaguru.shoppinglist.domain.product.Product;
 import com.javaguru.shoppinglist.domain.product.ProductCategory;
-import com.javaguru.shoppinglist.domain.product.request.CreateRequest;
-import com.javaguru.shoppinglist.domain.product.request.FindRequest;
-import com.javaguru.shoppinglist.domain.product.request.UpdateRequest;
-import com.javaguru.shoppinglist.domain.product.response.CreateResponse;
-import com.javaguru.shoppinglist.domain.product.response.FindResponse;
-import com.javaguru.shoppinglist.domain.product.response.UpdateResponse;
+import com.javaguru.shoppinglist.domain.product.request.ProductCreateRequest;
+import com.javaguru.shoppinglist.domain.product.request.ProductFindRequest;
+import com.javaguru.shoppinglist.domain.product.request.ProductUpdateRequest;
+import com.javaguru.shoppinglist.domain.product.response.ProductCreateResponse;
+import com.javaguru.shoppinglist.domain.product.response.ProductFindResponse;
+import com.javaguru.shoppinglist.domain.product.response.ProductUpdateResponse;
 import com.javaguru.shoppinglist.repository.DBErrors;
 import com.javaguru.shoppinglist.service.ProductService;
-import com.javaguru.shoppinglist.service.validation.ValidationErrors;
+import com.javaguru.shoppinglist.service.validationProduct.ProductValidationErrors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -294,7 +294,7 @@ public class UIController {
     }
 
     private void addNewProduct() throws IOException {
-        CreateRequest productCreateRequest = new CreateRequest();
+        ProductCreateRequest productCreateRequest = new ProductCreateRequest();
         BufferedReader reader = reader();
 
         System.out.println("Product name: ");
@@ -316,8 +316,9 @@ public class UIController {
         productCreateRequest.setProductDescription(productDescription);
 
 
-        CreateResponse createResponse = productService.addProduct(productCreateRequest);
-        if (createResponse.hasValidationErrors() || createResponse.hasDBRrrors()) {
+        ProductCreateResponse createResponse = productService.addProduct(productCreateRequest);
+
+        if (createResponse.hasValidationErrors() || createResponse.hasDBErrors()) {
             printValidationErrorsList(createResponse.getValidationErrors());
             printDBErrorsList(createResponse.getDBErrors());
         } else {
@@ -331,10 +332,10 @@ public class UIController {
         System.out.println("Enter product ID: ");
         String productID = reader.readLine();
 
-        FindRequest findRequest = new FindRequest();
+        ProductFindRequest productFindRequest = new ProductFindRequest();
         if (!productID.isEmpty()) {
-            findRequest.setProductID(Long.valueOf(productID));
-            printProduct(productService.findByID(findRequest).getFoundProduct());
+            productFindRequest.setProductID(Long.valueOf(productID));
+            printProduct(productService.findByID(productFindRequest).getFoundProduct());
         } else {
             System.out.println("ID can't be empty");
         }
@@ -343,11 +344,11 @@ public class UIController {
     private void findProductByCategory() {
         String productCategory = readCategories();
 
-        FindRequest findRequest = new FindRequest();
+        ProductFindRequest productFindRequest = new ProductFindRequest();
 
         if (productCategory != null) {
-            findRequest.setProductCategory(ProductCategory.valueOf(productCategory));
-            printProductsList(productService.findByCategory(findRequest).getListOfFoundProducts());
+            productFindRequest.setProductCategory(ProductCategory.valueOf(productCategory));
+            printProductsList(productService.findByCategory(productFindRequest).getListOfFoundProducts());
         } else {
             System.out.println("Category can't be empty");
         }
@@ -359,11 +360,11 @@ public class UIController {
         System.out.println("Enter product ID: ");
         String productID = reader.readLine();
 
-        FindRequest findRequest = new FindRequest();
+        ProductFindRequest productFindRequest = new ProductFindRequest();
         if (!productID.isEmpty()) {
-            findRequest.setProductID(Long.valueOf(productID));
+            productFindRequest.setProductID(Long.valueOf(productID));
 
-            FindResponse findResponse = productService.findByID(findRequest);
+            ProductFindResponse findResponse = productService.findByID(productFindRequest);
 
             if (findResponse.getFoundProduct() != null) {
                 System.out.println("Product name: ");
@@ -375,7 +376,7 @@ public class UIController {
                 productPrice = (productPrice == null ? findResponse.getFoundProduct().getProductRegularPrice() : productPrice);
 
                 String productCategory = readCategories();
-                productCategory = (productCategory == null ? String.valueOf(findResponse.getFoundProduct().getProductCategory()) : productCategory);
+                productCategory = (productCategory == null ? String.valueOf(findResponse.getFoundProduct().getCategory()) : productCategory);
 
                 BigDecimal productDiscount = readDiscount();
                 productDiscount = (productDiscount == null ? findResponse.getFoundProduct().getProductDiscount() : productDiscount);
@@ -384,7 +385,7 @@ public class UIController {
                 String productDescription = readString();
                 productDescription = (productDescription == null || productDescription.isEmpty() ? findResponse.getFoundProduct().getProductDescription() : productDescription);
 
-                UpdateRequest updateRequest = new UpdateRequest();
+                ProductUpdateRequest updateRequest = new ProductUpdateRequest();
 
                 updateRequest.setProductID(Long.valueOf(productID));
                 updateRequest.setProductName(productName);
@@ -393,16 +394,16 @@ public class UIController {
                 updateRequest.setProductDiscount(productDiscount);
                 updateRequest.setProductDescription(productDescription);
 
-                UpdateResponse updateResponse = productService.updateByID(updateRequest);
+                ProductUpdateResponse updateResponse = productService.updateByID(updateRequest);
 
-                if (updateResponse.hasValidationErrors() || updateResponse.hasDBRrrors()) {
+                if (updateResponse.hasValidationErrors() || updateResponse.hasDBErrors()) {
                     printValidationErrorsList(updateResponse.getValidationErrors());
                     printDBErrorsList(updateResponse.getDBErrors());
                 } else {
                     printProduct(updateResponse.getUpdatedProduct());
                     System.out.println("Product was successfuly updated.");
                 }
-            } else if (findResponse.hasDBRrrors()) {
+            } else if (findResponse.hasDBErrors()) {
                 printDBErrorsList(findResponse.getDBErrors());
             } else {
                 System.out.println("Such entry doesn't exist in database");
@@ -418,10 +419,10 @@ public class UIController {
         System.out.println("Enter product ID: ");
         Long productID = Long.valueOf(reader.readLine());
 
-        FindRequest findRequest = new FindRequest();
-        findRequest.setProductID(productID);
+        ProductFindRequest productFindRequest = new ProductFindRequest();
+        productFindRequest.setProductID(productID);
 
-        if (productService.deleteByID(findRequest)) {
+        if (productService.deleteByID(productFindRequest)) {
             System.out.println("Product was successfuly deleted.");
         } else {
             System.out.println("Product not found.");
@@ -434,7 +435,7 @@ public class UIController {
                 ", Regular price: " + product.getProductRegularPrice() + "$" + ", " +
                 "Discount: " + product.getProductDiscount() + "%, " +
                 "Actual price: " + product.calculateActualPrice() + "$" + ", " +
-                "Category: " + product.getProductCategory());
+                "Category: " + product.getCategory());
         if (product.getProductDescription() != null) {
             System.out.print(", Description: " + product.getProductDescription());
         }
@@ -457,10 +458,10 @@ public class UIController {
         }
     }
 
-    private void printValidationErrorsList(List<ValidationErrors> errorsList) {
+    private void printValidationErrorsList(List<ProductValidationErrors> errorsList) {
         if (errorsList != null && !errorsList.isEmpty()) {
-            for (ValidationErrors validationErrors : errorsList) {
-                System.out.println(validationErrors.getResponse());
+            for (ProductValidationErrors productValidationErrors : errorsList) {
+                System.out.println(productValidationErrors.getResponse());
             }
         }
     }
