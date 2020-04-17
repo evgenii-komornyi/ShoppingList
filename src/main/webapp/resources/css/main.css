@@ -3,74 +3,26 @@ body {
     color: #fff !important;
 }
 
-.modal {
-    color: #000 !important;
-}
-
 h1, h2, h3 {
     text-align: center !important;
-}
-
-a, button.addToCart {
-    color: #fff !important;
-}
-
-a > i {
-    cursor: pointer;
-    margin-left: 20px;
-}
-
-.all_products {
-    text-align: center;
-}
-
-.product-name {
-    text-align: left !important;
-    font-size: 20px;
-}
-
-.cart-name {
-    text-align: center;
-    font-size: 20px;
-}
-
-.dropdown.buy {
-    position: absolute !important;
-    top: 52%;
-    right: 5%;
-    font-size: 20px !important;
 }
 
 .dropdown-menu {
     background-color: #343a40 !important;
 }
 
-.dropdown-menu > a > i.plus {
-    padding-right: 10px;
-    margin-left: -10px;
+a.dropdown-item {
+    color: #c3d4e5;
 }
 
-.dropdown-item:hover {
-    background-color: #29945d !important;
+.modal-content {
+    background-color: #343a40 !important;
 }
 
-.price .product-regular_price {
-    display: inline;
-    margin: 2px;
-    text-decoration: line-through;
-    color: crimson;
+a {
+    cursor: pointer;
 }
 
-.price .product-actual_price {
-    margin: 2px;
-    display: inline;
-    color: #34ce57;
-}
-
-.errors {
-    width: 100%;
-}
-.errors > span {
-    color: red !important;
-    display: block;
+a.dropdown-item.createCart {
+    color: #1c7430;
 }

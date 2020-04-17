@@ -1,6 +1,5 @@
 package com.javaguru.shoppinglist.dto.cartDTO;
 
-import com.javaguru.shoppinglist.dto.productDTO.Status;
 import com.javaguru.shoppinglist.repository.DBErrors;
 import com.javaguru.shoppinglist.service.validationCart.CartValidationErrors;
 

@@ -1,4 +1,5 @@
 package com.javaguru.shoppinglist.dto.cartDTO;
 
-public class DeleteCartDTO {
+public class DeleteCartDTO extends CartBasicDTO {
+
 }

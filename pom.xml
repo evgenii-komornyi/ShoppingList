@@ -145,7 +145,7 @@
                 <version>2.1</version>
                 <configuration>
                     <path>/</path>
-                    <port>1025</port>
+                    <port>8085</port>
                     <systemProperties>
                         <spring.profiles.active>hibernate</spring.profiles.active>
                     </systemProperties>

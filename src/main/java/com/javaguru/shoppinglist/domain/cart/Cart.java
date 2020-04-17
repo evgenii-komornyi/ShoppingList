@@ -20,8 +20,9 @@ public class Cart {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "products_in_cart",
-            joinColumns = @JoinColumn(name = "cartId"),
-            inverseJoinColumns = @JoinColumn(name = "productId"))
+            joinColumns = @JoinColumn(name = "cartId", unique = true),
+            inverseJoinColumns = @JoinColumn(name = "productId", unique = true)
+            )
     private List<Product> productsInCart;
 
     @Override

@@ -3,108 +3,83 @@ package com.javaguru.shoppinglist.dto.productDTO;
 import com.javaguru.shoppinglist.domain.product.ProductCategory;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 
 public class ProductDTO {
-    private Long productID;
-    private String productName;
-    private BigDecimal productRegularPrice;
-    private ProductCategory productCategory;
+    private Long id;
+    private String name;
+    private BigDecimal regPrice;
+    private ProductCategory category;
 
-    private BigDecimal productDiscount;
-    private String productDescription;
-
-    public ProductDTO() {
-    }
-
-    public ProductDTO(Long productID, String productName, BigDecimal productRegularPrice, ProductCategory productCategory) {
-        this.productID = productID;
-        this.productName = productName;
-        this.productRegularPrice = productRegularPrice;
-        this.productCategory = productCategory;
-    }
+    private BigDecimal discount;
+    private String description;
+    private BigDecimal actPrice;
 
     @Override
     public String toString() {
         return "ProductDTO{" +
-                "productID=" + productID +
-                ", productName='" + productName + '\'' +
-                ", productRegularPrice=" + productRegularPrice +
-                ", productCategory=" + productCategory +
-                ", productDiscount=" + productDiscount +
-                ", productDescription='" + productDescription + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", regPrice=" + regPrice +
+                ", category=" + category +
+                ", discount=" + discount +
+                ", description='" + description + '\'' +
+                ", actPrice=" + actPrice +
                 '}';
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ProductDTO that = (ProductDTO) o;
-        return Objects.equals(productID, that.productID) &&
-                Objects.equals(productName, that.productName) &&
-                Objects.equals(productRegularPrice, that.productRegularPrice) &&
-                productCategory == that.productCategory &&
-                Objects.equals(productDiscount, that.productDiscount) &&
-                Objects.equals(productDescription, that.productDescription);
+    public Long getId() {
+        return id;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(productID, productName, productRegularPrice, productCategory, productDiscount, productDescription);
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public Long getProductID() {
-        return productID;
+    public String getName() {
+        return name;
     }
 
-    public void setProductID(Long productID) {
-        this.productID = productID;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getProductName() {
-        return productName;
+    public BigDecimal getRegPrice() {
+        return regPrice;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
+    public void setRegPrice(BigDecimal regPrice) {
+        this.regPrice = regPrice;
     }
 
-    public BigDecimal getProductRegularPrice() {
-        return productRegularPrice;
+    public ProductCategory getCategory() {
+        return category;
     }
 
-    public void setProductRegularPrice(BigDecimal productRegularPrice) {
-        this.productRegularPrice = productRegularPrice;
+    public void setCategory(ProductCategory category) {
+        this.category = category;
     }
 
-    public ProductCategory getProductCategory() {
-        return productCategory;
+    public BigDecimal getDiscount() {
+        return discount;
     }
 
-    public void setProductCategory(ProductCategory productCategory) {
-        this.productCategory = productCategory;
+    public void setDiscount(BigDecimal discount) {
+        this.discount = discount;
     }
 
-    public BigDecimal getProductDiscount() {
-        return productDiscount;
+    public String getDescription() {
+        return description;
     }
 
-    public void setProductDiscount(BigDecimal productDiscount) {
-        this.productDiscount = productDiscount;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public String getProductDescription() {
-        return productDescription;
+    public BigDecimal getActPrice() {
+        return actPrice;
     }
 
-    public void setProductDescription(String productDescription) {
-        this.productDescription = productDescription;
-    }
-
-    public interface Update {
-    }
-
-    public interface Create {
+    public void setActPrice(BigDecimal actPrice) {
+        this.actPrice = actPrice;
     }
 }

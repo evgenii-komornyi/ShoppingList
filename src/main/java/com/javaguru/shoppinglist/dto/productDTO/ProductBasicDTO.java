@@ -6,17 +6,8 @@ import com.javaguru.shoppinglist.service.validationProduct.ProductValidationErro
 import java.util.List;
 
 public abstract class ProductBasicDTO {
-    private Status stat;
     private List<ProductValidationErrors> productValidationErrors;
     private List<DBErrors> dbErrors;
-
-    public Status getStat() {
-        return stat;
-    }
-
-    public void setStat(Status stat) {
-        this.stat = stat;
-    }
 
     public List<ProductValidationErrors> getValidationErrors() {
         return productValidationErrors;

@@ -24,6 +24,7 @@ public class SpringWebMVCConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/pages/**").addResourceLocations("pages/");
         registry.addResourceHandler("/css/**").addResourceLocations("resources/css/").setCachePeriod(31556926);
         registry.addResourceHandler("/webfonts/**").addResourceLocations("resources/webfonts/").setCachePeriod(31556926);
         registry.addResourceHandler("/img/**").addResourceLocations("resources/img/").setCachePeriod(31556926);
