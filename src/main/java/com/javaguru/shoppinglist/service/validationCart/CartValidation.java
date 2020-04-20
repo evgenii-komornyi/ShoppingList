@@ -6,12 +6,15 @@ import org.springframework.stereotype.Component;
 public class CartValidation {
     private final CartCreateRequestValidation cartCreateRequestValidation;
     private final CartFindRequestValidation cartFindRequestValidation;
-    private final EmptyCartValidation emptyCartValidation;
+    private final CartRemoveValidation cartRemoveValidation;
+    private final AddProductToCartValidation addProductToCartValidation;
 
-    public CartValidation(CartCreateRequestValidation cartCreateRequestValidation, CartFindRequestValidation cartFindRequestValidation, EmptyCartValidation emptyCartValidation) {
+
+    public CartValidation(CartCreateRequestValidation cartCreateRequestValidation, CartFindRequestValidation cartFindRequestValidation, CartRemoveValidation cartRemoveValidation, AddProductToCartValidation addProductToCartValidation) {
         this.cartCreateRequestValidation = cartCreateRequestValidation;
         this.cartFindRequestValidation = cartFindRequestValidation;
-        this.emptyCartValidation = emptyCartValidation;
+        this.cartRemoveValidation = cartRemoveValidation;
+        this.addProductToCartValidation = addProductToCartValidation;
     }
 
     public CartCreateRequestValidation getCartCreateRequestValidation() {
@@ -22,7 +25,11 @@ public class CartValidation {
         return cartFindRequestValidation;
     }
 
-    public EmptyCartValidation getEmptyCartValidation() {
-        return emptyCartValidation;
+    public CartRemoveValidation getCartRemoveValidation() {
+        return cartRemoveValidation;
+    }
+
+    public AddProductToCartValidation getAddProductToCartValidation() {
+        return addProductToCartValidation;
     }
 }

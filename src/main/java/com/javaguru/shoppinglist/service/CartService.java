@@ -11,15 +11,17 @@ import com.javaguru.shoppinglist.service.validationCart.CartValidation;
 import com.javaguru.shoppinglist.service.validationCart.CartValidationErrors;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.CannotCreateTransactionException;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@Transactional(propagation = Propagation.NEVER)
 public class CartService {
     private final CartRepository cartRepository;
     private final ProductService productService;
@@ -46,7 +48,7 @@ public class CartService {
                 cart.setCartName(createRequest.getCartName());
 
                 response.setCart(cartRepository.create(cart));
-            } catch (CannotGetJdbcConnectionException e) {
+            } catch (CannotCreateTransactionException e) {
                 dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
             } catch (DuplicateKeyException | ConstraintViolationException e) {
                 dbErrors.add(DBErrors.DB_DUPLICATE_ENTRY);
@@ -66,7 +68,7 @@ public class CartService {
         } else {
             try {
                 response.setCart(cartRepository.readById(findRequest));
-            } catch (CannotGetJdbcConnectionException e) {
+            } catch (CannotCreateTransactionException e) {
                 dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
                 response.setDbErrorsList(dbErrors);
             }
@@ -75,21 +77,21 @@ public class CartService {
     }
 
     public CartRemoveResponse deleteCartByID(CartFindRequest findRequest) {
-        List<CartValidationErrors> validationErrors = cartValidation.getCartFindRequestValidation().validateFindRequest(findRequest);
         List<DBErrors> dbErrorsList = new ArrayList<>();
         CartRemoveResponse response = new CartRemoveResponse();
 
+        Cart cart = findCartByID(findRequest).getCart();
+        List<CartValidationErrors> validationErrors = cartValidation.getCartRemoveValidation().validateCartRemoveRequest(cart);
+
         if (!validationErrors.isEmpty()) {
             response.setValidationErrorsList(validationErrors);
-            response.setStat(RemoveCartStatus.FAILED);
         } else {
-            Cart cart = findCartByID(findRequest).getCart();
             try {
                 cartRepository.delete(cart);
-                response.setStat(RemoveCartStatus.SUCCESS);
-            } catch (CannotGetJdbcConnectionException e) {
+            } catch (CannotCreateTransactionException e) {
                 dbErrorsList.add(DBErrors.DB_CONNECTION_FAILED);
             }
+            response.setDbErrorsList(dbErrorsList);
         }
         return response;
     }
@@ -98,49 +100,36 @@ public class CartService {
         List<Cart> allCarts = new ArrayList<>();
         try {
             allCarts = cartRepository.findAll();
-        } catch (CannotGetJdbcConnectionException e) {
+        } catch (CannotCreateTransactionException e) {
             System.out.println("Database has failed, please try again later");
         }
 
         return allCarts;
     }
 
-    public AddProductToCartResponse addToCart(AddProductToCartByIDRequest requestProductCartIDs) {
+    public AddProductToCartResponse addToCart(Long productID, Integer cartID) {
         ProductFindRequest productFindRequest = new ProductFindRequest();
         CartFindRequest cartFindRequest = new CartFindRequest();
-
-        productFindRequest.setProductID(requestProductCartIDs.getProductID());
-        cartFindRequest.setCartId(requestProductCartIDs.getCartID());
+        productFindRequest.setProductID(productID);
+        cartFindRequest.setCartId(cartID);
 
         Product product = productService.findByID(productFindRequest).getFoundProduct();
         Cart cart = findCartByID(cartFindRequest).getCart();
 
+        List<CartValidationErrors> cartValidationErrors = cartValidation.getAddProductToCartValidation().validateAddProductToCart(cart, product);
+
         AddProductToCartResponse response = new AddProductToCartResponse();
-        List<DBErrors> dbErrorsList = new ArrayList<>();
+        List<DBErrors> dbErrors = new ArrayList<>();
 
-        if (dbErrorsList.isEmpty()) {
-            if (product != null && cart != null) {
-                ProductToCartRequest productToCartRequest = new ProductToCartRequest();
-
-                productToCartRequest.setCart(cart);
-                productToCartRequest.setProduct(product);
-                try {
-                    cartRepository.addItemToCart(productToCartRequest);
-                    response.setStat(Status.SUCCESS);
-                } catch (DuplicateKeyException e) {
-                    dbErrorsList.add(DBErrors.DB_DUPLICATE_ENTRY_CART);
-                } catch (ConstraintViolationException e) {
-                    dbErrorsList.add(DBErrors.DB_DUPLICATE_ENTRY_CART);
-                } catch (DataIntegrityViolationException e) {
-                    dbErrorsList.add(DBErrors.DB_DUPLICATE_ENTRY_CART);
-                } catch (CannotGetJdbcConnectionException e) {
-                    dbErrorsList.add(DBErrors.DB_CONNECTION_FAILED);
-                }
-            } else {
-                response.setStat(Status.FAILED);
-            }
+        if (!cartValidationErrors.isEmpty()) {
+            response.setValidationErrorsList(cartValidationErrors);
         } else {
-            response.setDbErrorsList(dbErrorsList);
+            try {
+                cartRepository.addItemToCart(product, cart);
+            } catch (CannotCreateTransactionException e) {
+                dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
+            }
+            response.setDbErrorsList(dbErrors);
         }
 
         return response;

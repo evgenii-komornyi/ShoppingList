@@ -1,18 +1,16 @@
 package com.javaguru.shoppinglist.controller;
 
 import com.javaguru.shoppinglist.domain.cart.Cart;
-import com.javaguru.shoppinglist.domain.cart.request.AddProductToCartByIDRequest;
 import com.javaguru.shoppinglist.domain.cart.request.CartCreateRequest;
 import com.javaguru.shoppinglist.domain.cart.request.CartFindRequest;
 import com.javaguru.shoppinglist.domain.cart.request.RemoveProductFromCartRequest;
 import com.javaguru.shoppinglist.domain.cart.response.AddProductToCartResponse;
 import com.javaguru.shoppinglist.domain.cart.response.CartCreateResponse;
+import com.javaguru.shoppinglist.domain.cart.response.CartRemoveResponse;
 import com.javaguru.shoppinglist.domain.product.Product;
 import com.javaguru.shoppinglist.dto.cartDTO.*;
 import com.javaguru.shoppinglist.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
@@ -21,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@Transactional
 @EnableWebMvc
 public class CartController {
     @Autowired
@@ -55,7 +52,6 @@ public class CartController {
     }
 
     @PostMapping(value = "/addCart")
-    @Transactional(propagation = Propagation.NEVER)
     public CreateCartDTO addCart(@RequestBody CartCreateRequest createRequest) {
         CreateCartDTO responseJSON = new CreateCartDTO();
         CartCreateResponse cart = cartService.createCart(createRequest);
@@ -77,13 +73,13 @@ public class CartController {
         DeleteCartDTO responseJSON = new DeleteCartDTO();
         CartFindRequest cartFindRequest = new CartFindRequest();
         cartFindRequest.setCartId(cartId);
-        Cart cart = cartService.findCartByID(cartFindRequest).getCart();
+        cartService.findCartByID(cartFindRequest);
+        CartRemoveResponse cart = cartService.deleteCartByID(cartFindRequest);
 
-        if (cart != null && cart.getProductsInCart().isEmpty()) {
-            cartService.deleteCartByID(cartFindRequest);
-            responseJSON.setStat(Status.SUCCESS);
-        } else {
+        if (cart.hasValidationErrors() || cart.hasDBErrors()) {
             responseJSON.setStat(Status.FAILED);
+        } else {
+            responseJSON.setStat(Status.SUCCESS);
         }
         return responseJSON;
     }
@@ -129,13 +125,11 @@ public class CartController {
     @PutMapping(value = "/addToCart")
     public AddProductToCartDTO addCartItem(@RequestBody ProductToCartRequestDTO requestFromUI) {
         AddProductToCartDTO responseJSON = new AddProductToCartDTO();
-        AddProductToCartByIDRequest requestCartIDProductID = new AddProductToCartByIDRequest();
-        requestCartIDProductID.setCartID(requestFromUI.getCartID());
-        requestCartIDProductID.setProductID(requestFromUI.getProductID());
+        AddProductToCartResponse serviceAnswer = cartService.addToCart(requestFromUI.getProductID(), requestFromUI.getCartID());
 
-        AddProductToCartResponse serviceAnswer = cartService.addToCart(requestCartIDProductID);
-
-        if (serviceAnswer.getStat().equals("FAILED")) {
+        if (serviceAnswer.hasDBErrors() || serviceAnswer.hasValidationErrors()) {
+            responseJSON.setValidationErrors(serviceAnswer.getValidationErrorsList());
+            responseJSON.setDbErrors(serviceAnswer.getDbErrorsList());
             responseJSON.setStat(Status.FAILED);
         } else {
             responseJSON.setStat(Status.SUCCESS);

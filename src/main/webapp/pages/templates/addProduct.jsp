@@ -67,6 +67,11 @@
                         Error: {{ error }}
                     </li>
                 </ul>
+                <ul>
+                <li ng-repeat="error in DBErrors">
+                    Error: {{ error }}
+                </li>
+            </ul>
             </div>
         </div>
     </div>

@@ -93,7 +93,6 @@ public class ProductController {
     }
 
     @PostMapping(value = "/create")
-    @Transactional(propagation = Propagation.NEVER)
     public CreateProductDTO addProduct(@RequestBody ProductCreateRequest productCreateRequest) {
         CreateProductDTO responseJSON = new CreateProductDTO();
         ProductCreateResponse product = productService.addProduct(productCreateRequest);

@@ -4,12 +4,13 @@ import com.javaguru.shoppinglist.domain.cart.Cart;
 import com.javaguru.shoppinglist.domain.cart.request.CartFindRequest;
 import com.javaguru.shoppinglist.domain.cart.request.CartRemoveAllItemsRequest;
 import com.javaguru.shoppinglist.domain.cart.request.CartRemoveItemRequest;
-import com.javaguru.shoppinglist.domain.cart.request.ProductToCartRequest;
 import com.javaguru.shoppinglist.domain.product.Product;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,11 +51,12 @@ public class CartRepository {
         return false;
     }
 
-    public List<Product> addItemToCart(ProductToCartRequest request) {
-        sessionFactory.getCurrentSession().saveOrUpdate(request.getProduct());
-        List<Product> productInCart = request.getCart().getProductsInCart();
-        productInCart.add(request.getProduct());
+    public List<Product> addItemToCart(Product product, Cart cart) throws DataIntegrityViolationException {
+        Session session = sessionFactory.getCurrentSession();
+        List<Product> productInCart = cart.getProductsInCart();
 
+        session.saveOrUpdate(product);
+        productInCart.add(product);
         return productInCart;
     }
 

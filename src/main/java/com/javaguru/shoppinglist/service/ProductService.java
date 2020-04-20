@@ -15,8 +15,10 @@ import com.javaguru.shoppinglist.service.validationProduct.ProductValidationErro
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.CannotCreateTransactionException;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@Transactional(propagation = Propagation.NEVER)
 public class ProductService {
     private final Repository<Product> repository;
     private final ProductValidation productValidation;
@@ -56,7 +59,7 @@ public class ProductService {
                 product.setProductDescription(productCreateRequest.getProductDescription());
 
                 response.setProduct(repository.create(product));
-            } catch (CannotGetJdbcConnectionException e) {
+            } catch (CannotCreateTransactionException e) {
                 dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
             } catch (DuplicateKeyException | ConstraintViolationException e) {
                 dbErrors.add(DBErrors.DB_DUPLICATE_ENTRY);
@@ -76,7 +79,7 @@ public class ProductService {
             } else {
                 response.setFoundProduct(repository.readByID(productFindRequest));
             }
-        } catch(CannotGetJdbcConnectionException e) {
+        } catch(CannotCreateTransactionException e) {
             dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
             response.setDBErrors(dbErrors);
         }
@@ -94,7 +97,7 @@ public class ProductService {
 
                 response.setListOfFoundProducts(repository.read(productFindRequest));
             }
-        } catch(CannotGetJdbcConnectionException | NullPointerException e){
+        } catch(CannotCreateTransactionException e){
             dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
             response.setDBErrors(dbErrors);
         }
@@ -111,7 +114,7 @@ public class ProductService {
         } else {
             try {
                 response.setUpdatedProduct(repository.updateByID(updateRequest));
-            } catch (CannotGetJdbcConnectionException e) {
+            } catch (CannotCreateTransactionException e) {
                 dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
             } catch (DuplicateKeyException e) {
                 dbErrors.add(DBErrors.DB_DUPLICATE_ENTRY);
@@ -126,7 +129,7 @@ public class ProductService {
 
         try {
             hasDeleted = repository.delete(productFindRequest);
-        } catch (CannotGetJdbcConnectionException e) {
+        } catch (CannotCreateTransactionException e) {
             System.out.println("Database has failed, please try again later");
         }
         return hasDeleted;
@@ -136,7 +139,7 @@ public class ProductService {
         List<Product> allDB = null;
         try {
             allDB = repository.findAll();
-        } catch (CannotGetJdbcConnectionException e) {
+        } catch (CannotCreateTransactionException e) {
             System.out.println("Database has failed, please try again later");
         }
 

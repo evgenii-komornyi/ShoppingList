@@ -64,8 +64,14 @@ shoppingList.controller("productCtrl", function ($scope, $http, $location) {
             method: "PUT",
             url: $scope.URL + "/addToCart",
             data: params
-        }).then(function () {
-            alert("Product was added to cart: " + cartName);
+        }).then(function (response) {
+            if (response.data.validationErrors != null || response.data.dbErrors != null) {
+                angular.forEach(response.data.validationErrors, function (key, val) {
+                    alert(key, val);
+                })
+            } else {
+                alert("Product was added to cart: " + cartName);
+            }
         });
         _refreshProductList();
     };
