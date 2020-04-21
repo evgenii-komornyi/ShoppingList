@@ -27,7 +27,7 @@ shoppingList.controller('cartInfoCtrl', function ($scope, $http, $routeParams) {
             method: "DELETE",
             url: $scope.URL + "/cart/clearCart?cartId=" + cartId
         }).then(function () {
-            alert("Cart " + cartName + "is cleaned");
+            alert("Cart " + cartName + " is cleaned");
             _refreshCartInfo();
         })
     }

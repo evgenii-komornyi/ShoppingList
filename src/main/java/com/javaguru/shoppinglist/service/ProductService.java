@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.CannotCreateTransactionException;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -26,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@Transactional(propagation = Propagation.NEVER)
+@Transactional
 public class ProductService {
     private final Repository<Product> repository;
     private final ProductValidation productValidation;

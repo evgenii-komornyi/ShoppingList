@@ -1,7 +1,8 @@
 package com.javaguru.shoppinglist.service;
 
 import com.javaguru.shoppinglist.domain.cart.Cart;
-import com.javaguru.shoppinglist.domain.cart.request.*;
+import com.javaguru.shoppinglist.domain.cart.request.CartCreateRequest;
+import com.javaguru.shoppinglist.domain.cart.request.CartFindRequest;
 import com.javaguru.shoppinglist.domain.cart.response.*;
 import com.javaguru.shoppinglist.domain.product.Product;
 import com.javaguru.shoppinglist.domain.product.request.ProductFindRequest;
@@ -14,14 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.CannotCreateTransactionException;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@Transactional(propagation = Propagation.NEVER)
+@Transactional
 public class CartService {
     private final CartRepository cartRepository;
     private final ProductService productService;
@@ -34,12 +35,12 @@ public class CartService {
         this.cartValidation = cartValidation;
     }
 
+    @Transactional
     public CartCreateResponse createCart(CartCreateRequest createRequest) {
         List<CartValidationErrors> validationErrors = cartValidation.getCartCreateRequestValidation().validateCreateRequest(createRequest);
-        List<DBErrors> dbErrors = new ArrayList<>();
 
         CartCreateResponse response = new CartCreateResponse();
-
+        List<DBErrors> dbErrors = new ArrayList<>();
         if (!validationErrors.isEmpty()) {
             response.setValidationErrorsList(validationErrors);
         } else {
@@ -58,44 +59,55 @@ public class CartService {
         return response;
     }
 
+    @Transactional
     public CartFindResponse findCartByID(CartFindRequest findRequest) {
         List<CartValidationErrors> validationErrors = cartValidation.getCartFindRequestValidation().validateFindRequest(findRequest);
-        List<DBErrors> dbErrors = new ArrayList<>();
-        CartFindResponse response = new CartFindResponse();
 
+        CartFindResponse response = new CartFindResponse();
+        List<DBErrors> dbErrors = new ArrayList<>();
         if (!validationErrors.isEmpty()) {
             response.setValidationErrorsList(validationErrors);
         } else {
             try {
                 response.setCart(cartRepository.readById(findRequest));
+                response.setAmount(calculateTotalAmount(response.getCart().getProductsInCart()));
             } catch (CannotCreateTransactionException e) {
                 dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
-                response.setDbErrorsList(dbErrors);
             }
+            response.setDbErrorsList(dbErrors);
         }
         return response;
     }
 
-    public CartRemoveResponse deleteCartByID(CartFindRequest findRequest) {
-        List<DBErrors> dbErrorsList = new ArrayList<>();
-        CartRemoveResponse response = new CartRemoveResponse();
+    private BigDecimal calculateTotalAmount(List<Product> products) {
+        BigDecimal amount = new BigDecimal("0.00");
+        for (Product product : products) {
+            amount = amount.add(product.calculateActualPrice());
+        }
+        return amount;
+    }
 
+    @Transactional
+    public CartRemoveResponse deleteCartByID(CartFindRequest findRequest) {
         Cart cart = findCartByID(findRequest).getCart();
         List<CartValidationErrors> validationErrors = cartValidation.getCartRemoveValidation().validateCartRemoveRequest(cart);
 
+        CartRemoveResponse response = new CartRemoveResponse();
+        List<DBErrors> dbErrors = new ArrayList<>();
         if (!validationErrors.isEmpty()) {
             response.setValidationErrorsList(validationErrors);
         } else {
             try {
                 cartRepository.delete(cart);
             } catch (CannotCreateTransactionException e) {
-                dbErrorsList.add(DBErrors.DB_CONNECTION_FAILED);
+                dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
             }
-            response.setDbErrorsList(dbErrorsList);
+            response.setDbErrorsList(dbErrors);
         }
         return response;
     }
 
+    @Transactional
     public List<Cart> getAllCarts() {
         List<Cart> allCarts = new ArrayList<>();
         try {
@@ -107,6 +119,7 @@ public class CartService {
         return allCarts;
     }
 
+    @Transactional
     public AddProductToCartResponse addToCart(Long productID, Integer cartID) {
         ProductFindRequest productFindRequest = new ProductFindRequest();
         CartFindRequest cartFindRequest = new CartFindRequest();
@@ -135,41 +148,47 @@ public class CartService {
         return response;
     }
 
-    public CartRemoveItemResponse removeItemFromCart(RemoveProductFromCartRequest requestCartAndProductIDs) {
+    @Transactional
+    public CartRemoveItemResponse removeItemFromCart(Integer cartId, Long productId) {
         CartFindRequest cartFindRequest = new CartFindRequest();
-        cartFindRequest.setCartId(requestCartAndProductIDs.getCartID());
-
+        cartFindRequest.setCartId(cartId);
         Cart cart = findCartByID(cartFindRequest).getCart();
 
         ProductFindRequest productFindRequest = new ProductFindRequest();
-        productFindRequest.setProductID(requestCartAndProductIDs.getProductID());
-
+        productFindRequest.setProductID(productId);
         Product product = productService.findByID(productFindRequest).getFoundProduct();
 
         CartRemoveItemResponse response = new CartRemoveItemResponse();
+        List<DBErrors> dbErrors = new ArrayList<>();
 
-        if (requestCartAndProductIDs.getCartID() != null && requestCartAndProductIDs.getProductID() != null) {
-            CartRemoveItemRequest cartRemoveItemRequest = new CartRemoveItemRequest();
-
-            cartRemoveItemRequest.setCart(cart);
-            cartRemoveItemRequest.setProduct(product);
-            cartRepository.removeItemFromCart(cartRemoveItemRequest);
-            response.setStat(RemoveCartStatus.SUCCESS);
+        if (cart != null && product != null) {
+            try {
+                cartRepository.removeItemFromCart(cart, product);
+            } catch (CannotCreateTransactionException e) {
+                dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
+            }
         } else {
-            response.setStat(RemoveCartStatus.FAILED);
+            response.setDbErrorsList(dbErrors);
         }
         return response;
     }
 
+    @Transactional
     public CartClearResponse clearCart(CartFindRequest cartFindRequest) {
-        CartRemoveAllItemsRequest request = new CartRemoveAllItemsRequest();
         Cart cart = findCartByID(cartFindRequest).getCart();
+        List<CartValidationErrors> validationErrors = cartValidation.getCartFindRequestValidation().validateFindRequest(cartFindRequest);
 
         CartClearResponse response = new CartClearResponse();
-        if (cart != null) {
-            request.setCart(cart);
-            cartRepository.removeAllItemsFromCart(request);
-            response.setStat(RemoveCartStatus.SUCCESS);
+        List<DBErrors> dbErrors = new ArrayList<>();
+        if (!validationErrors.isEmpty()) {
+            response.setValidationErrorsList(validationErrors);
+        } else {
+            try {
+                cartRepository.removeAllItemsFromCart(cart);
+            } catch (CannotCreateTransactionException e) {
+                dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
+            }
+            response.setDbErrorsList(dbErrors);
         }
         return response;
     }

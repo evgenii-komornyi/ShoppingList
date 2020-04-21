@@ -3,18 +3,18 @@ package com.javaguru.shoppinglist.controller;
 import com.javaguru.shoppinglist.domain.cart.Cart;
 import com.javaguru.shoppinglist.domain.cart.request.CartCreateRequest;
 import com.javaguru.shoppinglist.domain.cart.request.CartFindRequest;
-import com.javaguru.shoppinglist.domain.cart.request.RemoveProductFromCartRequest;
 import com.javaguru.shoppinglist.domain.cart.response.AddProductToCartResponse;
 import com.javaguru.shoppinglist.domain.cart.response.CartCreateResponse;
+import com.javaguru.shoppinglist.domain.cart.response.CartFindResponse;
 import com.javaguru.shoppinglist.domain.cart.response.CartRemoveResponse;
 import com.javaguru.shoppinglist.domain.product.Product;
 import com.javaguru.shoppinglist.dto.cartDTO.*;
 import com.javaguru.shoppinglist.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,6 +77,8 @@ public class CartController {
         CartRemoveResponse cart = cartService.deleteCartByID(cartFindRequest);
 
         if (cart.hasValidationErrors() || cart.hasDBErrors()) {
+            responseJSON.setValidationErrors(cart.getValidationErrorsList());
+            responseJSON.setDbErrors(cart.getDbErrorsList());
             responseJSON.setStat(Status.FAILED);
         } else {
             responseJSON.setStat(Status.SUCCESS);
@@ -85,25 +87,25 @@ public class CartController {
     }
 
     @GetMapping(value = "/cart/{cartId}")
+    @Transactional
     public CartDTO singleCart(@PathVariable("cartId") Integer id) {
         CartDTO responseJSON = new CartDTO();
         CartFindRequest findRequest = new CartFindRequest();
         findRequest.setCartId(id);
 
-        Cart cart = cartService.findCartByID(findRequest).getCart();
-        List<Product> productsInCart = cart.getProductsInCart();
+        CartFindResponse cartFindResponse = cartService.findCartByID(findRequest);
+
+        List<Product> productsInCart = cartFindResponse.getCart().getProductsInCart();
         List<ProductInCartDTO> productsDTOList = new ArrayList<>();
 
-        BigDecimal amount = new BigDecimal("0.0");
         for (Product product : productsInCart) {
             productsDTOList.add(convertProductInCartToDTO(product));
-            amount = amount.add(product.calculateActualPrice());
         }
 
-        responseJSON.setId(cart.getCartId());
-        responseJSON.setName(cart.getCartName());
+        responseJSON.setId(cartFindResponse.getCart().getCartId());
+        responseJSON.setName(cartFindResponse.getCart().getCartName());
         responseJSON.setProducts(productsDTOList);
-        responseJSON.setAmount(amount);
+        responseJSON.setAmount(cartFindResponse.getAmount());
 
         return responseJSON;
     }
@@ -141,15 +143,12 @@ public class CartController {
     }
 
     @DeleteMapping(value = "/cart/removeProduct")
+    @Transactional
     public DeleteProductFromCartDTO removeItem(@RequestParam Long productId, @RequestParam Integer cartId) {
         DeleteProductFromCartDTO responseJSON = new DeleteProductFromCartDTO();
 
-        RemoveProductFromCartRequest removeProductFromCartRequest = new RemoveProductFromCartRequest();
-        removeProductFromCartRequest.setCartID(cartId);
-        removeProductFromCartRequest.setProductID(productId);
-
         if (cartId != null && productId != null) {
-            cartService.removeItemFromCart(removeProductFromCartRequest);
+            cartService.removeItemFromCart(cartId, productId);
             responseJSON.setProductID(productId);
             responseJSON.setCartID(cartId);
             responseJSON.setStat(Status.SUCCESS);

@@ -29,7 +29,6 @@ shoppingList.controller("cartCtrl", function ($scope, $http) {
                 $scope.DataBaseErrors = response.data.dbErrors;
             } else {
                 alert("Cart with name " + $scope.cartName + " was created!");
-                location.href = $scope.URL + "/products";
             }
         });
     };

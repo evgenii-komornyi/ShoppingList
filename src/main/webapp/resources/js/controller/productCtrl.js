@@ -81,7 +81,7 @@ shoppingList.controller("productCtrl", function ($scope, $http, $location) {
             method: "DELETE",
             url: $scope.URL + "/product/" + product.id
         }).then(function () {
-            alert("Product with ID " + product.id + "was deleted.");
+            alert("Product with ID " + product.id + " was deleted.");
             _refreshProductList();
         });
     };

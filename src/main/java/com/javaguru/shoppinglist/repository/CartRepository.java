@@ -2,8 +2,6 @@ package com.javaguru.shoppinglist.repository;
 
 import com.javaguru.shoppinglist.domain.cart.Cart;
 import com.javaguru.shoppinglist.domain.cart.request.CartFindRequest;
-import com.javaguru.shoppinglist.domain.cart.request.CartRemoveAllItemsRequest;
-import com.javaguru.shoppinglist.domain.cart.request.CartRemoveItemRequest;
 import com.javaguru.shoppinglist.domain.product.Product;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -12,13 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Repository
 @Profile("hibernate")
-@Transactional
 public class CartRepository {
     private final SessionFactory sessionFactory;
 
@@ -60,19 +56,15 @@ public class CartRepository {
         return productInCart;
     }
 
-    public boolean removeItemFromCart(CartRemoveItemRequest request) {
-        Cart cart = request.getCart();
-        Product product = request.getProduct();
-
+    public boolean removeItemFromCart(Cart cart, Product product) {
         List<Product> productsInCart = cart.getProductsInCart();
 
         productsInCart.remove(product);
         return true;
     }
 
-    public boolean removeAllItemsFromCart(CartRemoveAllItemsRequest request) {
-        if (request.getCart() != null) {
-            Cart cart = request.getCart();
+    public boolean removeAllItemsFromCart(Cart cart) {
+        if (cart != null) {
             List<Product> productsInCart = cart.getProductsInCart();
 
             productsInCart.clear();
