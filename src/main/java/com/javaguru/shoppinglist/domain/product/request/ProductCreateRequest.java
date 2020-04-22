@@ -3,6 +3,8 @@ package com.javaguru.shoppinglist.domain.product.request;
 import java.math.BigDecimal;
 
 public class ProductCreateRequest {
+    private Long id;
+
     private String productName;
 
     private BigDecimal productPrice;
@@ -11,6 +13,25 @@ public class ProductCreateRequest {
 
     private BigDecimal productDiscount = BigDecimal.ZERO;
     private String productDescription = "";
+
+    @Override
+    public String toString() {
+        return "ProductCreateRequest{" +
+                "productName='" + productName + '\'' +
+                ", productPrice=" + productPrice +
+                ", productCategory='" + productCategory + '\'' +
+                ", productDiscount=" + productDiscount +
+                ", productDescription='" + productDescription + '\'' +
+                '}';
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getProductName() {
         return productName;

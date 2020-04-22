@@ -56,7 +56,6 @@ public class ProductService {
                 }
 
                 product.setProductDescription(productCreateRequest.getProductDescription());
-
                 response.setProduct(repository.create(product));
             } catch (CannotCreateTransactionException e) {
                 dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
