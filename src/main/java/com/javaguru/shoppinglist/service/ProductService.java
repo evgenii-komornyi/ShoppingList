@@ -27,11 +27,11 @@ import java.util.List;
 @Component
 @Transactional
 public class ProductService {
-    private final Repository<Product> repository;
+    private final Repository repository;
     private final ProductValidation productValidation;
 
     @Autowired
-    public ProductService(Repository<Product> repository, ProductValidation productValidation) {
+    public ProductService(Repository repository, ProductValidation productValidation) {
         this.repository = repository;
         this.productValidation = productValidation;
     }

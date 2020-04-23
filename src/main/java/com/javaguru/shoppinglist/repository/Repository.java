@@ -6,11 +6,11 @@ import com.javaguru.shoppinglist.domain.product.request.ProductUpdateRequest;
 
 import java.util.List;
 
-public interface Repository<T> {
-    T create(T item);
-    List<T> read(ProductFindRequest productFindRequest);
+public interface Repository {
+    Product create(Product product);
+    List<Product> read(ProductFindRequest productFindRequest);
     Product readByID(ProductFindRequest productFindRequest);
-    T updateByID(ProductUpdateRequest updateRequest);
+    Product updateByID(ProductUpdateRequest updateRequest);
     boolean delete(ProductFindRequest itemID);
     List<Product> findAll();
 }

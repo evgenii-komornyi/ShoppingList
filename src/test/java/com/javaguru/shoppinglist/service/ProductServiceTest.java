@@ -11,8 +11,8 @@ import com.javaguru.shoppinglist.service.validationProduct.ProductValidation;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
@@ -23,36 +23,38 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class ProductServiceTest {
     @Mock
-    private Repository<Product> repository;
-    @Mock
-    private ProductCreateRequestValidation createRequestValidation;
-    @Mock
-    private ProductFindRequestValidation findRequestValidation;
-    @Mock
-    private ProductUpdateRequestValidation updateRequestValidation;
-    @InjectMocks
+    private Repository repository;
+
+    private ProductCreateRequestValidation createRequestValidation = new ProductCreateRequestValidation();
+
+    private ProductFindRequestValidation findRequestValidation = new ProductFindRequestValidation();
+
+    private ProductUpdateRequestValidation updateRequestValidation = new ProductUpdateRequestValidation();
+
     private ProductValidation validation = new ProductValidation(createRequestValidation, findRequestValidation, updateRequestValidation);
 
     private ProductService victim;
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         victim = new ProductService(repository, validation);
     }
 
     @Test
     public void shouldCreateProduct() {
-        ProductCreateRequest request = productCreateRequest();
         Product newProduct = product();
-
-        when(repository.create(newProduct)).thenReturn(newProduct);
-        Product result = victim.addProduct(request).getProduct();
+        System.out.println(newProduct);
+        System.out.println(productCreateRequest());
+        when(repository.create(newProduct)).thenReturn(product());
+        Product result = victim.addProduct(productCreateRequest()).getProduct();
 
         assertThat(newProduct).isEqualTo(result);
     }
 
     private ProductCreateRequest productCreateRequest() {
         ProductCreateRequest milk = new ProductCreateRequest();
+        milk.setProductID(10L);
         milk.setProductName("Milk");
         milk.setProductPrice(new BigDecimal("20.00"));
         milk.setProductCategory("MILK");
@@ -64,6 +66,7 @@ public class ProductServiceTest {
 
     private Product product() {
         Product milk = new Product("Milk", new BigDecimal("20.00"), ProductCategory.MILK);
+        milk.setProductID(10L);
         milk.setProductDiscount(new BigDecimal("0.00"));
         milk.setProductDescription("Fresh milk from Latvia");
 

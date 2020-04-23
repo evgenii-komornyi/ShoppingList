@@ -17,7 +17,7 @@ import java.util.List;
 @org.springframework.stereotype.Repository
 @Profile("hibernate")
 @Transactional
-class ProductRepository implements Repository<Product> {
+class ProductRepository implements Repository {
     private final SessionFactory sessionFactory;
 
     @Autowired
@@ -26,9 +26,9 @@ class ProductRepository implements Repository<Product> {
     }
 
     @Override
-    public Product create(Product item) {
-        sessionFactory.getCurrentSession().save(item);
-        return item;
+    public Product create(Product product) {
+        sessionFactory.getCurrentSession().save(product);
+        return product;
     }
 
     @Override
