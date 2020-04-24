@@ -13,7 +13,7 @@ import com.javaguru.shoppinglist.service.validationCart.CartValidationErrors;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+@Service
 @Transactional
 public class CartService {
     private final CartRepository cartRepository;
@@ -80,9 +80,11 @@ public class CartService {
     }
 
     private BigDecimal calculateTotalAmount(List<Product> products) {
-        BigDecimal amount = new BigDecimal("0.00");
-        for (Product product : products) {
-            amount = amount.add(product.calculateActualPrice());
+        BigDecimal amount = BigDecimal.ZERO;
+        if (products != null && !products.isEmpty()) {
+            for (Product product : products) {
+                amount = amount.add(product.calculateActualPrice());
+            }
         }
         return amount;
     }
@@ -98,7 +100,7 @@ public class CartService {
             response.setValidationErrorsList(validationErrors);
         } else {
             try {
-                cartRepository.delete(cart);
+                response.setDeleted(cartRepository.delete(cart));
             } catch (CannotCreateTransactionException e) {
                 dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
             }
