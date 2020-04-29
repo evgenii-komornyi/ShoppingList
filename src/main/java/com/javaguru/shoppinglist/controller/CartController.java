@@ -10,7 +10,6 @@ import com.javaguru.shoppinglist.domain.cart.response.CartRemoveResponse;
 import com.javaguru.shoppinglist.domain.product.Product;
 import com.javaguru.shoppinglist.dto.cartDTO.*;
 import com.javaguru.shoppinglist.service.CartService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -21,7 +20,6 @@ import java.util.List;
 @RestController
 @EnableWebMvc
 public class CartController {
-    @Autowired
     private final CartService cartService;
 
     public CartController(CartService cartService) {
