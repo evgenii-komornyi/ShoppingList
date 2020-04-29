@@ -1,7 +1,7 @@
 shoppingList.controller("productCtrl", function ($scope, $http, $location) {
     $scope.products = [];
     $scope.carts = [];
-    $scope.URL = "http://localhost:8085";
+    $scope.URL = "http://localhost:8086";
 
     if ($location.$$path == "/products") {
         $scope.title = 'Products List';

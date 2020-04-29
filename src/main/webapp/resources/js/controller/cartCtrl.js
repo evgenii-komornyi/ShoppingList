@@ -1,5 +1,5 @@
 shoppingList.controller("cartCtrl", function ($scope, $http) {
-    $scope.URL = "http://localhost:8085";
+    $scope.URL = "http://localhost:8086";
 
     _refreshCartList();
 
