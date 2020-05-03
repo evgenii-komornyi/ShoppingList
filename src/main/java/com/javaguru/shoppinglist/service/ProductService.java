@@ -9,7 +9,7 @@ import com.javaguru.shoppinglist.domain.product.response.ProductCreateResponse;
 import com.javaguru.shoppinglist.domain.product.response.ProductFindResponse;
 import com.javaguru.shoppinglist.domain.product.response.ProductUpdateResponse;
 import com.javaguru.shoppinglist.repository.DBErrors;
-import com.javaguru.shoppinglist.repository.Repository;
+import com.javaguru.shoppinglist.repository.ProductRepository;
 import com.javaguru.shoppinglist.service.validationProduct.ProductValidation;
 import com.javaguru.shoppinglist.service.validationProduct.ProductValidationErrors;
 import org.hibernate.exception.ConstraintViolationException;
@@ -27,12 +27,12 @@ import java.util.List;
 @Service
 @Transactional
 public class ProductService {
-    private final Repository repository;
+    private final ProductRepository productRepository;
     private final ProductValidation productValidation;
 
     @Autowired
-    public ProductService(Repository repository, ProductValidation productValidation) {
-        this.repository = repository;
+    public ProductService(ProductRepository productRepository, ProductValidation productValidation) {
+        this.productRepository = productRepository;
         this.productValidation = productValidation;
     }
 
@@ -56,7 +56,7 @@ public class ProductService {
                 }
 
                 product.setProductDescription(productCreateRequest.getProductDescription());
-                response.setProduct(repository.create(product));
+                response.setProduct(productRepository.create(product));
             } catch (CannotCreateTransactionException e) {
                 dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
             } catch (DuplicateKeyException | ConstraintViolationException e) {
@@ -75,7 +75,7 @@ public class ProductService {
             if (!productValidationErrors.isEmpty()) {
                 response.setValidationErrors(productValidationErrors);
             } else {
-                response.setFoundProduct(repository.readByID(productFindRequest));
+                response.setFoundProduct(productRepository.readByID(productFindRequest));
             }
         } catch(CannotCreateTransactionException e) {
             dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
@@ -93,7 +93,7 @@ public class ProductService {
                 response.setValidationErrors(productValidationErrors);
             } else {
 
-                response.setListOfFoundProducts(repository.read(productFindRequest));
+                response.setListOfFoundProducts(productRepository.read(productFindRequest));
             }
         } catch(CannotCreateTransactionException e){
             dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
@@ -111,7 +111,7 @@ public class ProductService {
             response.setValidationErrors(productValidationErrors);
         } else {
             try {
-                response.setUpdatedProduct(repository.updateByID(updateRequest));
+                response.setUpdatedProduct(productRepository.updateByID(updateRequest));
             } catch (CannotCreateTransactionException e) {
                 dbErrors.add(DBErrors.DB_CONNECTION_FAILED);
             } catch (DuplicateKeyException e) {
@@ -126,7 +126,7 @@ public class ProductService {
         boolean hasDeleted = false;
 
         try {
-            hasDeleted = repository.delete(productFindRequest);
+            hasDeleted = productRepository.delete(productFindRequest);
         } catch (CannotCreateTransactionException e) {
             System.out.println("Database has failed, please try again later");
         }
@@ -136,7 +136,7 @@ public class ProductService {
     public List<Product> getAllDatabase() {
         List<Product> allDB = null;
         try {
-            allDB = repository.findAll();
+            allDB = productRepository.findAll();
         } catch (CannotCreateTransactionException e) {
             System.out.println("Database has failed, please try again later");
         }

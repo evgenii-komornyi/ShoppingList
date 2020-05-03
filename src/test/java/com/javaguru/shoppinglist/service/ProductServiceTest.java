@@ -5,7 +5,7 @@ import com.javaguru.shoppinglist.domain.product.ProductCategory;
 import com.javaguru.shoppinglist.domain.product.request.ProductCreateRequest;
 import com.javaguru.shoppinglist.domain.product.request.ProductFindRequest;
 import com.javaguru.shoppinglist.domain.product.request.ProductUpdateRequest;
-import com.javaguru.shoppinglist.repository.Repository;
+import com.javaguru.shoppinglist.repository.ProductRepository;
 import com.javaguru.shoppinglist.service.validationProduct.ProductCreateRequestValidation;
 import com.javaguru.shoppinglist.service.validationProduct.ProductFindRequestValidation;
 import com.javaguru.shoppinglist.service.validationProduct.ProductUpdateRequestValidation;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class ProductServiceTest {
     @Mock
-    private Repository productRepository;
+    private ProductRepository productRepository;
 
     private ProductCreateRequestValidation createRequestValidation = new ProductCreateRequestValidation();
 

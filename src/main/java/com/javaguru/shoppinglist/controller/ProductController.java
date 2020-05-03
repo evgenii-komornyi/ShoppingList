@@ -22,6 +22,7 @@ import java.util.List;
 
 @RestController
 @EnableWebMvc
+@CrossOrigin
 public class ProductController {
     @Autowired
     private final ProductService productService;
