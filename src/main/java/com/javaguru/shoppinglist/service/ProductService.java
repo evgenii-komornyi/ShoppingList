@@ -9,7 +9,7 @@ import com.javaguru.shoppinglist.domain.product.response.ProductCreateResponse;
 import com.javaguru.shoppinglist.domain.product.response.ProductFindResponse;
 import com.javaguru.shoppinglist.domain.product.response.ProductUpdateResponse;
 import com.javaguru.shoppinglist.repository.DBErrors;
-import com.javaguru.shoppinglist.repository.Repository;
+import com.javaguru.shoppinglist.repository.ProductRepository;
 import com.javaguru.shoppinglist.service.validationProduct.ProductValidation;
 import com.javaguru.shoppinglist.service.validationProduct.ProductValidationErrors;
 import org.hibernate.exception.ConstraintViolationException;
@@ -27,11 +27,11 @@ import java.util.List;
 @Service
 @Transactional
 public class ProductService {
-    private final Repository repository;
+    private final ProductRepository repository;
     private final ProductValidation productValidation;
 
     @Autowired
-    public ProductService(Repository repository, ProductValidation productValidation) {
+    public ProductService(ProductRepository repository, ProductValidation productValidation) {
         this.repository = repository;
         this.productValidation = productValidation;
     }

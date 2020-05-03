@@ -1,9 +1,14 @@
 package com.javaguru.shoppinglist.config;
 
+import com.javaguru.shoppinglist.repository.CartRepository;
+import com.javaguru.shoppinglist.repository.ProductRepositoryImpl;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
@@ -74,5 +79,15 @@ public class AppConfig {
     @Bean
     public PlatformTransactionManager transactionManager(SessionFactory sessionFactory) {
         return new HibernateTransactionManager(sessionFactory);
+    }
+
+    @Bean
+    public ProductRepositoryImpl productRepository(SessionFactory sessionFactory) {
+        return new ProductRepositoryImpl(sessionFactory);
+    }
+
+    @Bean
+    public CartRepository cartRepository(SessionFactory sessionFactory) {
+        return new CartRepository(sessionFactory);
     }
 }
