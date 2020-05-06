@@ -36,7 +36,7 @@ shoppingList.controller("cartCtrl", function ($scope, $http) {
     $scope.remove = function(cartId) {
         $http({
             method: "DELETE",
-            url: $scope.URL + "/carts/deleteCart?cartId=" + cartId
+            url: $scope.URL + "/carts/?cartId=" + cartId
         }).then(function (response) {
             if (response.data.stat == "SUCCESS") {
                 alert("Cart was deleted");

@@ -68,7 +68,7 @@ public class CartController {
         return responseJSON;
     }
 
-    @DeleteMapping(value = "/carts/deleteCart")
+    @DeleteMapping(value = "/carts/")
     public DeleteCartDTO deleteCartByID(@RequestParam Integer cartId) {
         DeleteCartDTO responseJSON = new DeleteCartDTO();
         CartFindRequest cartFindRequest = new CartFindRequest();
