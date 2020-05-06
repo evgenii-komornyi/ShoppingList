@@ -1,0 +1,28 @@
+body {
+    background: #000 !important;
+    color: #fff !important;
+}
+
+h1, h2, h3 {
+    text-align: center !important;
+}
+
+.dropdown-menu {
+    background-color: #343a40 !important;
+}
+
+a.dropdown-item {
+    color: #c3d4e5;
+}
+
+.modal-content {
+    background-color: #343a40 !important;
+}
+
+a {
+    cursor: pointer;
+}
+
+a.dropdown-item.createCart {
+    color: #1c7430;
+}

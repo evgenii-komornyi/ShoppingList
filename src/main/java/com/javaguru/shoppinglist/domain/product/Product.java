@@ -10,32 +10,32 @@ import java.util.Objects;
 public class Product {
 
     @Id
-    @Column(name = "productId")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productID;
 
-    @Column(name = "productName")
+    @Column(name = "name")
     private String productName;
 
-    @Column(name = "productRegularPrice")
+    @Column(name = "price")
     private BigDecimal productRegularPrice;
 
-    @Column(columnDefinition = "enum('ALCOHOL','BREAD','FISH','FRUITS','MEAT','MILK','SOFT_DRINKS','SWEETS','VEGETABLES'")
     @Enumerated(EnumType.STRING)
-    private ProductCategory productCategory;
+    @Column(name = "category")
+    private ProductCategory category;
 
-    @Column(name = "productDiscount")
+    @Column(name = "discount")
     private BigDecimal productDiscount;
 
-    @Column(name = "productDescription")
+    @Column(name = "description")
     private String productDescription;
 
     public Product(){}
 
-    public Product(String productName, BigDecimal productRegularPrice, ProductCategory productCategory) {
+    public Product(String productName, BigDecimal productRegularPrice, ProductCategory category) {
         this.productName = productName;
         this.productRegularPrice = productRegularPrice;
-        this.productCategory = productCategory;
+        this.category = category;
     }
 
     public BigDecimal calculateActualPrice() {
@@ -50,7 +50,7 @@ public class Product {
                 ", productName='" + productName + '\'' +
                 ", productRegularPrice=" + productRegularPrice +
                 ", productActualPrice=" + calculateActualPrice() +
-                ", productCategory=" + productCategory +
+                ", productCategory=" + category +
                 ", productDiscount=" + productDiscount.setScale(2, RoundingMode.HALF_EVEN) +
                 ", productDescription='" + productDescription + '\'' +
                 '}';
@@ -64,14 +64,14 @@ public class Product {
         return Objects.equals(productID, product.productID) &&
                 Objects.equals(productName, product.productName) &&
                 Objects.equals(productRegularPrice, product.productRegularPrice) &&
-                productCategory == product.productCategory &&
+                category == product.category &&
                 Objects.equals(productDiscount, product.productDiscount) &&
                 Objects.equals(productDescription, product.productDescription);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(productID, productName, productRegularPrice, productCategory, productDiscount, productDescription);
+        return Objects.hash(productID, productName, productRegularPrice, category, productDiscount, productDescription);
     }
 
     public Long getProductID() {
@@ -98,12 +98,12 @@ public class Product {
         this.productRegularPrice = productRegularPrice;
     }
 
-    public ProductCategory getProductCategory() {
-        return productCategory;
+    public ProductCategory getCategory() {
+        return category;
     }
 
-    public void setProductCategory(ProductCategory productCategory) {
-        this.productCategory = productCategory;
+    public void setCategory(ProductCategory productCategory) {
+        this.category = productCategory;
     }
 
     public BigDecimal getProductDiscount() {

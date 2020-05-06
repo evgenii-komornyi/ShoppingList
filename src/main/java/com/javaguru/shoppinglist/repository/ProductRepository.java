@@ -1,16 +1,16 @@
 package com.javaguru.shoppinglist.repository;
 
 import com.javaguru.shoppinglist.domain.product.Product;
-import com.javaguru.shoppinglist.domain.product.request.FindRequest;
-import com.javaguru.shoppinglist.domain.product.request.UpdateRequest;
+import com.javaguru.shoppinglist.domain.product.request.ProductFindRequest;
+import com.javaguru.shoppinglist.domain.product.request.ProductUpdateRequest;
 
 import java.util.List;
 
-public interface ProductRepository<T> {
-    T create(T item);
-    List<T> read(FindRequest findRequest);
-    Product readByID(FindRequest findRequest);
-    T updateByID(UpdateRequest updateRequest);
-    boolean delete(FindRequest itemID);
+public interface ProductRepository {
+    Product create(Product product);
+    List<Product> read(ProductFindRequest productFindRequest);
+    Product readByID(ProductFindRequest productFindRequest);
+    Product updateByID(ProductUpdateRequest updateRequest);
+    boolean delete(ProductFindRequest itemID);
     List<Product> findAll();
 }

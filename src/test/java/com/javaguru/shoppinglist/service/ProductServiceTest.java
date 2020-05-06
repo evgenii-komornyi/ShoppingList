@@ -1,143 +1,143 @@
 package com.javaguru.shoppinglist.service;
 
+import com.javaguru.shoppinglist.domain.product.Product;
 import com.javaguru.shoppinglist.domain.product.ProductCategory;
-import com.javaguru.shoppinglist.domain.product.request.CreateRequest;
-import com.javaguru.shoppinglist.domain.product.request.FindRequest;
-import com.javaguru.shoppinglist.domain.product.request.UpdateRequest;
-import com.javaguru.shoppinglist.repository.ProductInMemoryProductRepositoryImpl;
-import com.javaguru.shoppinglist.service.validation.CreateRequestValidation;
-import com.javaguru.shoppinglist.service.validation.FindRequestValidation;
-import com.javaguru.shoppinglist.service.validation.UpdateRequestValidation;
-import com.javaguru.shoppinglist.service.validation.Validation;
+import com.javaguru.shoppinglist.domain.product.request.ProductCreateRequest;
+import com.javaguru.shoppinglist.domain.product.request.ProductFindRequest;
+import com.javaguru.shoppinglist.domain.product.request.ProductUpdateRequest;
+import com.javaguru.shoppinglist.repository.ProductRepository;
+import com.javaguru.shoppinglist.service.validationProduct.ProductCreateRequestValidation;
+import com.javaguru.shoppinglist.service.validationProduct.ProductFindRequestValidation;
+import com.javaguru.shoppinglist.service.validationProduct.ProductUpdateRequestValidation;
+import com.javaguru.shoppinglist.service.validationProduct.ProductValidation;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ProductServiceTest {
-    private ProductInMemoryProductRepositoryImpl db = new ProductInMemoryProductRepositoryImpl();
+    @Mock
+    private ProductRepository productRepository;
 
-    private CreateRequestValidation createRequestValidation = new CreateRequestValidation();
-    private FindRequestValidation findRequestValidation = new FindRequestValidation();
-    private UpdateRequestValidation updateRequestValidation = new UpdateRequestValidation();
+    private ProductCreateRequestValidation createRequestValidation = new ProductCreateRequestValidation();
 
-    private Validation validation = new Validation(createRequestValidation, findRequestValidation, updateRequestValidation);
+    private ProductFindRequestValidation findRequestValidation = new ProductFindRequestValidation();
 
-    private ProductService victim = new ProductService(db, validation);
+    private ProductUpdateRequestValidation updateRequestValidation = new ProductUpdateRequestValidation();
 
-    @Test
-    public void shouldAddProductSuccessfuly() {
-        Long id = victim.addProduct(createRequest()).getProduct().getProductID();
+    private ProductValidation validation = new ProductValidation(createRequestValidation, findRequestValidation, updateRequestValidation);
 
-        String  expectedProductName = "Milk";
-        FindRequest findRequest = new FindRequest();
-        findRequest.setProductID(id);
+    private ProductService victim;
 
-        assertEquals(expectedProductName, victim.findByID(findRequest).getFoundProduct().getProductName());
-    }
-
-    private CreateRequest createRequest() {
-        CreateRequest createRequest = new CreateRequest();
-        createRequest.setProductName("Milk");
-        createRequest.setProductPrice(new BigDecimal("25"));
-        createRequest.setProductCategory("MILK");
-
-        return createRequest;
+    @Before
+    public void setUp() {
+        victim = new ProductService(productRepository, validation);
     }
 
     @Test
-    public void shouldFindByID() {
-        Long expectedID = victim.addProduct(createRequestForFindByID()).getProduct().getProductID();
+    public void shouldCreateProduct() {
+        Product newProduct = productWithoutID();
 
-        FindRequest findRequest = new FindRequest();
-        findRequest.setProductID(expectedID);
+        when(productRepository.create(newProduct)).thenReturn(productWithoutID());
+        Product result = victim.addProduct(productCreateRequest()).getProduct();
 
-        assertEquals(expectedID, victim.findByID(findRequest).getFoundProduct().getProductID());
-    }
-
-    private CreateRequest createRequestForFindByID() {
-        CreateRequest createRequest = new CreateRequest();
-        createRequest.setProductName("Milk");
-        createRequest.setProductPrice(new BigDecimal("25"));
-        createRequest.setProductCategory("MILK");
-
-        return createRequest;
+        assertThat(newProduct).isEqualTo(result);
     }
 
     @Test
-    public void shouldFindByCategory() {
-        victim.addProduct(milkForFindByCategory());
-        victim.addProduct(pienaForFindByCategory());
+    public void shouldFindProductByID() {
+        Product product = productWithID();
 
-        FindRequest findRequest = new FindRequest();
-        findRequest.setProductCategory(ProductCategory.MILK);
+        when(productRepository.readByID(findRequest())).thenReturn(product);
 
-        int expectedSize = 4;
-        assertEquals(expectedSize, victim.findByCategory(findRequest).getListOfFoundProducts().size());
+        Product result = victim.findByID(findRequest()).getFoundProduct();
+
+        assertThat(product).isEqualTo(result);
     }
 
-    private CreateRequest milkForFindByCategory() {
-        CreateRequest milk = new CreateRequest();
-        milk.setProductName("Milk");
-        milk.setProductPrice(new BigDecimal("25"));
-        milk.setProductCategory("MILK");
+    @Test
+    public void shouldUpdateProductByID() {
+        Product product = updatedProduct();
+
+        when(productRepository.updateByID(updateRequest())).thenReturn(product);
+
+        Product result = victim.updateByID(updateRequest()).getUpdatedProduct();
+
+        assertThat(result).isEqualTo(product);
+    }
+
+    @Test
+    public void shouldDeleteProductByID() {
+        when(productRepository.delete(findRequest())).thenReturn(true);
+
+        boolean result = victim.deleteByID(findRequest());
+
+        assertThat(result).isTrue();
+    }
+
+    private ProductCreateRequest productCreateRequest() {
+        ProductCreateRequest request = new ProductCreateRequest();
+        request.setProductName("Milk");
+        request.setProductPrice(new BigDecimal("20.00"));
+        request.setProductCategory("MILK");
+        request.setProductDiscount(new BigDecimal("0.00"));
+        request.setProductDescription("Fresh milk from Latvia");
+
+        return request;
+    }
+
+    private Product productWithoutID() {
+        Product product = new Product("Milk", new BigDecimal("20.00"), ProductCategory.MILK);
+        product.setProductDiscount(new BigDecimal("0.00"));
+        product.setProductDescription("Fresh milk from Latvia");
+
+        return product;
+    }
+
+    private ProductFindRequest findRequest() {
+        ProductFindRequest request = new ProductFindRequest();
+        request.setProductID(10L);
+
+        return request;
+    }
+
+    private ProductUpdateRequest updateRequest() {
+        ProductUpdateRequest request = new ProductUpdateRequest();
+        request.setProductID(10L);
+        request.setProductName("Milk Funny Milk");
+        request.setProductCategory("MILK");
+        request.setProductPrice(new BigDecimal("25.00"));
+        request.setProductDiscount(new BigDecimal("20.00"));
+        request.setProductDescription("Fresh milk from Latvia");
+
+        return request;
+    }
+
+    private Product updatedProduct() {
+        Product product = new Product();
+        product.setProductID(10L);
+        product.setProductName("Milk Funny Milk");
+        product.setCategory(ProductCategory.MILK);
+        product.setProductRegularPrice(new BigDecimal("25.00"));
+        product.setProductDiscount(new BigDecimal("20.00"));
+        product.setProductDescription("Fresh milk from Latvia");
+
+        return product;
+    }
+
+    private Product productWithID() {
+        Product milk = new Product("Milk", new BigDecimal("20.00"), ProductCategory.MILK);
+        milk.setProductID(10L);
+        milk.setProductDiscount(new BigDecimal("0.00"));
+        milk.setProductDescription("Fresh milk from Latvia");
 
         return milk;
-    }
-
-    private CreateRequest pienaForFindByCategory() {
-        CreateRequest piena = new CreateRequest();
-        piena.setProductName("Baltis milk");
-        piena.setProductPrice(new BigDecimal("20"));
-        piena.setProductCategory("MILK");
-
-        return piena;
-    }
-
-    @Test
-    public void shouldUpdateByID() {
-        Long id = victim.addProduct(milkForUpdateByCategory()).getProduct().getProductID();
-
-        UpdateRequest updateRequest = new UpdateRequest();
-        updateRequest.setProductID(id);
-        updateRequest.setProductName("Milk");
-        updateRequest.setProductPrice(new BigDecimal("25"));
-        updateRequest.setProductCategory("MILK");
-        updateRequest.setProductDiscount(new BigDecimal("50"));
-
-        BigDecimal expectedDiscount = new BigDecimal("50");
-
-        assertEquals(expectedDiscount, victim.updateByID(updateRequest).getUpdatedProduct().getProductDiscount());
-    }
-
-    private CreateRequest milkForUpdateByCategory() {
-        CreateRequest milk = new CreateRequest();
-        milk.setProductName("Milk");
-        milk.setProductPrice(new BigDecimal("25"));
-        milk.setProductCategory("MILK");
-
-        return milk;
-    }
-
-    @Test
-    public void deleteByID() {
-        Long id = victim.addProduct(createRequestForFindByID()).getProduct().getProductID();
-
-        FindRequest findRequest = new FindRequest();
-        findRequest.setProductID(id);
-
-        assertTrue(victim.deleteByID(findRequest));
-    }
-
-    @Test
-    public void getAllDatabase() {
-        victim.addProduct(milkForUpdateByCategory());
-        victim.addProduct(pienaForFindByCategory());
-
-        int expectedSizeOfDB = 7;
-
-        assertEquals(expectedSizeOfDB, victim.getAllDatabase().size());
     }
 }
