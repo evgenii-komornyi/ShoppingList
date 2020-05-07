@@ -1,7 +1,10 @@
 package com.javaguru.shoppinglist.config;
 
 import com.javaguru.shoppinglist.repository.CartRepository;
+import com.javaguru.shoppinglist.repository.ProductRepository;
 import com.javaguru.shoppinglist.repository.ProductRepositoryImpl;
+import com.javaguru.shoppinglist.service.ProductService;
+import com.javaguru.shoppinglist.service.validationProduct.ProductValidation;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,6 +82,11 @@ public class AppConfig {
     @Bean
     public PlatformTransactionManager transactionManager(SessionFactory sessionFactory) {
         return new HibernateTransactionManager(sessionFactory);
+    }
+
+    @Bean
+    public ProductService productService(ProductRepository productRepository, ProductValidation productValidation) {
+        return new ProductService(productRepository, productValidation);
     }
 
     @Bean
